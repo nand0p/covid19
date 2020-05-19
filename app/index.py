@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, render_template
 import requests
 import json
 import os
@@ -14,8 +14,15 @@ reports_dir = 'reports/'
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-             'favicon.ico', mimetype='image/xicon')
+    static_path = os.path.join(app.root_path, 'static')
+    return send_from_directory(static_path, 'favicon.ico', mimetype='image/xicon')
+
+
+@app.route('/static/chart.min.js')
+def chart():
+    static_path = os.path.join(app.root_path, 'static')
+    return send_from_directory(static_path, 'chart.min.js', mimetype='text/javascript')
+
 
 @app.route('/')
 def home(path='/reports'):
@@ -29,66 +36,49 @@ def home(path='/reports'):
 def get_state_html(state):
   html = ''
   reports_list = []
-  first_day = ''
-  second_day = ''
-  last_day = ''
+  growth = []
+  deaths = []
   dates = load_json(dates_file)
   for day in dates:
-    if day == dates[0]:
-      reports_list += get_reports_list(day)
-    elif day == dates[-1]:
-      reports_list += get_reports_list(day)
-    elif day == dates[-2]:
-      reports_list += get_reports_list(day)
+    reports_list += get_reports_list(day)
   for record in reports_list:
-    if record['region']['iso'] == 'USA':
-      state_html, f_day, l_day, s_day = get_state_info(state, record, dates)
-      if f_day:
-        first_day = f_day
-      if l_day:
-        last_day = l_day
-      if s_day:
-        second_day = s_day
-      html += state_html
-  html += get_growth_rate(first_day, last_day, second_day, len(dates))
+    state_html, deaths = get_state_info(state, record, dates, deaths)
+    html += state_html
+  html += get_growth_rate(deaths)
   return html
 
 
-def get_state_info(state, record, dates):
+def get_state_info(state, record, dates, deaths):
   state_html = ''
-  first_day = ''
-  last_day = ''
-  second_day = ''
-  if record['region']['province'] == state:
-    if record['date'] == dates[0]:
-      if record['deaths']:
-        first_day = record['deaths']
-    elif record['date'] == dates[-1]:
-      if record['deaths']:
-        last_day = record['deaths']
-    elif record['date'] == dates[-2]:
-      if record['deaths']:
-        second_day = record['deaths']
-    state_html += '<tr><td>' + record['region']['province'] + '</td><td>' + record['date'] + '</td><td>' + str(record['deaths']) + '</td></tr>'
-  return state_html, first_day, last_day, second_day
+  if record['deaths']:
+    if record['region']['province'] == state and record['region']['iso'] == 'USA':
+      deaths.append(record['deaths'])
+      if record['date'] == dates[0] or record['date'] == dates[-1] or record['date'] == dates[-2]:
+        state_html += '<tr><td>' + record['region']['province'] + '</td><td>' + record['date'] + '</td><td>' + str(record['deaths']) + '</td></tr>'
+  return state_html, deaths
 
 
-def get_growth_rate(first_day, last_day, second_day, length):
-  if not first_day:
-    first_day = -1
-  if not last_day:
-    last_day = -1
-  if not second_day:
-    second_day = -1
-  growth_rate = (last_day/first_day)**(1/length)-1
-  growth_rate_last = (second_day/first_day)**(1/(length-1))-1
-  growth_html = '<tr><td>current growth rate</td><td>first:' + str(first_day) + ' last:' + str(last_day) + ' len:' + str(length) + '</td><td>' + str(growth_rate) + '</td></tr>'
-  growth_html += '<tr><td>last growth rate</td><td>first:' + str(first_day) + ' last:' + str(second_day) + ' len:' + str(length-1) + '</td>'
-  if growth_rate_last < growth_rate:
-    growth_html += '<td bgcolor=red>' + str(growth_rate_last) + '</td>'
+def get_growth_rate(deaths):
+  growth_rate = []
+  growth_html = ''
+  counter = 0
+  for day in range(1, len(deaths)):
+    print('(' + str(deaths[day]) + '/' + str(deaths[0]) + ')**(1/' + str(day) + ')-1)')
+    growth_rate.append((deaths[day]/deaths[0])**(1/day)-1)
+
+  if growth_rate[-1] > growth_rate[-2]:
+    growth_html = '<tr><td>current growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-1])
+    growth_html += ' len:' + str(len(deaths)) + '</td><td bgcolor=red>' + str(growth_rate[-1]) + '</td></tr>'
+    growth_html += '<tr><td>last growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-2])
+    growth_html += ' len:' + str(len(deaths)-1) + '</td><td bgcolor=red>' + str(growth_rate[-2]) + '</td></tr>'
   else:
-    growth_html += '<td bgcolor=green>' + str(growth_rate_last) + '</td>'
-  growth_html += '</tr>'
+    growth_html = '<tr><td>current growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-1])
+    growth_html += ' len:' + str(len(deaths)) + '</td><td bgcolor=green>' + str(growth_rate[-1]) + '</td></tr>'
+    growth_html += '<tr><td>last growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-2])
+    growth_html += ' len:' + str(len(deaths)-1) + '</td><td bgcolor=green>' + str(growth_rate[-2]) + '</td></tr>'
+
+  growth_html += '<td colspan=3>' + str(growth_rate) + '</td></tr>'
+  #growth_html += '<td colspan=3>' + render_template('chart.html', values=growth_rate, labels=range(1,len(deaths))) + '</td></tr>'
   return growth_html
 
 
