@@ -3,10 +3,42 @@ import requests
 
 provinces = []
 provinces_file = 'states.json'
-
-response = requests.get('https://covid-api.com/api/provinces/USA')
-for entry in json.loads(response.content)['data']:
-  provinces.append(entry['province'].strip())
+date_file = 'dates.json'
+dates = [
+  '2020-04-16',
+  '2020-04-17',
+  '2020-04-18',
+  '2020-04-19',
+  '2020-04-20',
+  '2020-04-21',
+  '2020-04-22',
+  '2020-04-23',
+  '2020-04-24',
+  '2020-04-25',
+  '2020-04-26',
+  '2020-04-27',
+  '2020-04-28',
+  '2020-04-29',
+  '2020-04-30',
+  '2020-05-01',
+  '2020-05-02',
+  '2020-05-03',
+  '2020-05-04',
+  '2020-05-05',
+  '2020-05-06',
+  '2020-05-07',
+  '2020-05-08',
+  '2020-05-09',
+  '2020-05-10',
+  '2020-05-11',
+  '2020-05-12',
+  '2020-05-13',
+  '2020-05-14',
+  '2020-05-15',
+  '2020-05-16',
+  '2020-05-17',
+  '2020-05-18',
+]
 
 remove_provinces = [
   'Norfolk County, MA',
@@ -158,10 +190,30 @@ remove_provinces = [
   'Wuhan Evacuee',
   'Yolo County, CA'
 ]
-                     
-for province in remove_provinces:
-  provinces.remove(province)
 
-print(provinces)
-with open(provinces_file, 'w') as fileout:
+
+def make_dates():
+  with open(date_file, 'w') as fileout:
+    json.dump(dates, fileout)
+
+
+def make_states():
+  response = requests.get('https://covid-api.com/api/provinces/USA')
+  for entry in json.loads(response.content)['data']:
+    provinces.append(entry['province'].strip())
+
+  for province in remove_provinces:
+    provinces.remove(province)
+
+  print(provinces)
+  with open(provinces_file, 'w') as fileout:
     json.dump(provinces, fileout)
+
+
+def main():
+  make_states()
+  make_dates()
+
+
+if __name__ == '__main__':
+  main()

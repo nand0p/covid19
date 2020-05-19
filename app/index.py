@@ -1,14 +1,21 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 import requests
 import json
+import os
 
 
 app = Flask(__name__)
 api_endpoint = 'https://covid-api.com/api'
-header = '<b>Covid 19 Statistics</b><p>'
+header = '<link rel="icon" type="image/x-icon" href="favicon.ico" /><b>Covid 19 Statistics</b><p>'
 dates_file = 'dates.json'
 states_file = 'states.json'
+reports_dir = 'reports/'
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+             'favicon.ico', mimetype='image/xicon')
 
 @app.route('/')
 def home(path='/reports'):
@@ -144,10 +151,10 @@ def parse_totals(json):
   
 
 def get_reports_list(day):
-  with open(day + '_reports.json', 'r') as reports_in:
+  with open(reports_dir + day + '_reports.json', 'r') as reports_in:
     reports_list = json.load(reports_in)['data']
   return reports_list
   
 
-if __name__ == '__main++':
+if __name__ == '__main__':
   app.run(debug=True,host='0.0.0.0')
