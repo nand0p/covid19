@@ -141,6 +141,7 @@ remove_provinces = [
   'Unassigned Location (From Diamond Princess)',
   'Unassigned Location, VT',
   'Unassigned Location, WA',
+  'United States Virgin Islands',
   'Unknown Location, MA',
   'US',
   'US Military', 

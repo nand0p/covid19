@@ -150,4 +150,4 @@ def get_reports_list(day):
   
 
 if __name__ == '__main++':
-  app.run(debug=True)
+  app.run(debug=True,host='0.0.0.0',port=5000)
