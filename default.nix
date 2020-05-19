@@ -4,5 +4,6 @@ stdenv.mkDerivation {
   buildInputs = [
     gcc8
     ncurses
+    libstdcxx5
   ];
 }

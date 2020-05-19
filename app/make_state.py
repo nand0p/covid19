@@ -3,6 +3,8 @@ import requests
 
 provinces = []
 provinces_file = 'states.json'
+reports_file = 'reports.json'
+reports_dir = 'reports/'
 date_file = 'dates.json'
 dates = [
   '2020-04-16',
@@ -203,18 +205,34 @@ def make_states():
   response = requests.get('https://covid-api.com/api/provinces/USA')
   for entry in json.loads(response.content)['data']:
     provinces.append(entry['province'].strip())
-
   for province in remove_provinces:
     provinces.remove(province)
-
-  print(provinces)
+  print('states: ' + str(provinces))
   with open(provinces_file, 'w') as fileout:
     json.dump(provinces, fileout)
+
+
+def make_reports():
+  reports_list = []
+  reports = []
+  for day in dates:
+    with open(reports_dir + day + '_reports.json', 'r') as reports_in:
+      reports_list = json.load(reports_in)['data']
+    for record in reports_list:
+      if record['region']['iso'] == 'USA':
+        state = record['region']['province']
+        deaths = record['deaths']
+        date = record['date']
+        reports.append([date, state, deaths])
+  print(reports)
+  with open(reports_file, 'w') as fileout:
+    json.dump(reports, fileout)
 
 
 def main():
   make_states()
   make_dates()
+  make_reports()
 
 
 if __name__ == '__main__':

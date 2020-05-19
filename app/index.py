@@ -1,12 +1,14 @@
-from flask import Flask, send_from_directory, render_template
+from flask import Flask, send_from_directory
 import requests
 import json
 import os
 
+#import base64
+#import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 api_endpoint = 'https://covid-api.com/api'
-header = '<link rel="icon" type="image/x-icon" href="favicon.ico" /><b>Covid 19 Statistics</b><p>'
+header = '<script src="static/chart.min.js"></script><link rel="icon" type="image/x-icon" href="favicon.ico" /><b>Covid 19 Statistics</b><p>'
 dates_file = 'dates.json'
 states_file = 'states.json'
 reports_dir = 'reports/'
@@ -44,7 +46,7 @@ def get_state_html(state):
   for record in reports_list:
     state_html, deaths = get_state_info(state, record, dates, deaths)
     html += state_html
-  html += get_growth_rate(deaths)
+  html += get_growth_rate(deaths, dates)
   return html
 
 
@@ -58,28 +60,43 @@ def get_state_info(state, record, dates, deaths):
   return state_html, deaths
 
 
-def get_growth_rate(deaths):
-  growth_rate = []
+def get_growth_rate(deaths, dates):
   growth_html = ''
-  counter = 0
+  growth_rate = []
   for day in range(1, len(deaths)):
     print('(' + str(deaths[day]) + '/' + str(deaths[0]) + ')**(1/' + str(day) + ')-1)')
     growth_rate.append((deaths[day]/deaths[0])**(1/day)-1)
 
   if growth_rate[-1] > growth_rate[-2]:
-    growth_html = '<tr><td>current growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-1])
-    growth_html += ' len:' + str(len(deaths)) + '</td><td bgcolor=red>' + str(growth_rate[-1]) + '</td></tr>'
-    growth_html += '<tr><td>last growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-2])
-    growth_html += ' len:' + str(len(deaths)-1) + '</td><td bgcolor=red>' + str(growth_rate[-2]) + '</td></tr>'
+    growth_html += get_growth_html('red', deaths, growth_rate)
   else:
-    growth_html = '<tr><td>current growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-1])
-    growth_html += ' len:' + str(len(deaths)) + '</td><td bgcolor=green>' + str(growth_rate[-1]) + '</td></tr>'
-    growth_html += '<tr><td>last growth rate</td><td>first:' + str(deaths[0]) + ' last:' + str(deaths[-2])
-    growth_html += ' len:' + str(len(deaths)-1) + '</td><td bgcolor=green>' + str(growth_rate[-2]) + '</td></tr>'
+    growth_html += get_growth_html('green', deaths, growth_rate)
 
-  growth_html += '<td colspan=3>' + str(growth_rate) + '</td></tr>'
-  #growth_html += '<td colspan=3>' + render_template('chart.html', values=growth_rate, labels=range(1,len(deaths))) + '</td></tr>'
+  growth_html += get_growth_chart(growth_rate, dates)
   return growth_html
+
+
+def get_growth_chart(growth_rate, dates):
+  chart_html = '<td colspan=3>' + str(growth_rate) + '</td></tr><br>' + str(dates)
+
+  #graph = io.BytesIO()
+  #plt.plot(growth_rate,range(1,len(growth_rate)))
+  #plt.savefig(graph, format='png')
+  #graph.seek(0)
+  #plot_url = base64.b64encode(graph.getvalue()),decode()
+  #graph.write_image('/tmp/image.jpg')
+  #growth_html += '<td colspan=3><img src="data:image/png;base64,' + plot_url + '"></td></tr>'
+  #growth_html += '<td colspan=3>' + render_template('chart.html', values=growth_rate, labels=range(1,len(deaths))) + '</td></tr>'
+  return chart_html
+
+
+def get_growth_html(color, deaths, growth_rate):
+  return '<tr><td bgcolor=' + color + '>current growth rate</td>' + \
+         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + ' last:' + str(deaths[-1]) + ' len:' + str(len(deaths)) + '</td>' + \
+         '<td bgcolor=' + color + '>' + str(growth_rate[-1]) + '</td></tr><tr>' + \
+         '<td bgcolor=' + color + '>last growth rate</td><td bgcolor=' + color + '>first:' + \
+         str(deaths[0]) + ' last:' + str(deaths[-2]) + ' len:' + str(len(deaths)-1) + '</td>' + \
+         '<td bgcolor=' + color + '>' + str(growth_rate[-2]) + '</td></tr>'
 
 
 @app.route('/totals')

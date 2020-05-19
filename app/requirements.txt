@@ -1,3 +1,11 @@
 requests == 2.23.0
 flask == 1.1.2
+
 #uwsgi == 2.0.18
+#plotly == 4.7.1
+#psutil == 5.7.0
+#orca == 1.5.3
+#Cython == 0.29.18
+#six
+#numphy 
+#matplotlib == 3.2.1
