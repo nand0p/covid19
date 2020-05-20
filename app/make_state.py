@@ -42,6 +42,7 @@ dates = [
   '2020-05-17',
   '2020-05-18',
   '2020-05-19',
+  '2020-05-20',
 ]
 
 remove_provinces = [
@@ -253,7 +254,7 @@ def get_raw_json():
       outjson.write(response.content)
 
 def main():
-  #get_raw_json()
+  get_raw_json()
   make_provinces()
   make_dates()
   make_reports()
