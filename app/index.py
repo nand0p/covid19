@@ -71,22 +71,23 @@ def get_growth_rate_rows(deaths, dates):
 
 
 def get_growth_chart_rows(growth_rate, dates):
-  chart_html = '<tr><td colspan=3><table border=10 width=100%><tr height=100>'
-  for entry in growth_rate:
-    if entry < .0001:
-      entry = .0001
-    chart_html += '<td bgcolor=blue><b>'
-    for x in range(1,int(entry*1000)):
-      chart_html += ' X '
-    chart_html += '</b></td>'
-  chart_html += '</tr><tr>'
-  for date in dates:
-    if date is not dates[0]:
-        chart_html += '<td>' + date[5:] + '</td>'
-  chart_html += '</tr><tr>'
-  for rate in growth_rate:
-    chart_html += '<td>' + str(round(rate,4)) + '</td>'
-  chart_html += '</tr></table></td></tr>'
+  chart_html = '<tr><td colspan=3>' + str(growth_rate) + '<br>' + str(dates) + '</td></tr>'
+  #chart_html = '<tr><td colspan=3><table border=10 width=100%><tr height=100>'
+  #for entry in growth_rate:
+  #  if entry < .0001:
+  #    entry = .0001
+  #  chart_html += '<td bgcolor=blue><b>'
+  #  for x in range(1,int(entry*1000)):
+  #    chart_html += ' X '
+  #  chart_html += '</b></td>'
+  #chart_html += '</tr><tr>'
+  #for date in dates:
+  #  if date is not dates[0]:
+  #      chart_html += '<td>' + date[5:] + '</td>'
+  #chart_html += '</tr><tr>'
+  #for rate in growth_rate:
+  #  chart_html += '<td>' + str(round(rate,4)) + '</td>'
+  #chart_html += '</tr></table></td></tr>'
   return chart_html
 
 
