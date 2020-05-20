@@ -3,7 +3,6 @@ FROM python:alpine3.7
 COPY . .
 WORKDIR /app
 
-RUN apt-get install python-six -y
 RUN pip install --no-cache-dir -r requirements.txt
 RUN python make_state.py
 RUN python freshen_reports.py
