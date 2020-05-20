@@ -2,7 +2,7 @@
 
 cd app
 
-if [ "$1" == "state"]; then
+if [ "$1" == "state" ]; then
   python make_state.py
 fi
 

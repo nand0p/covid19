@@ -9,6 +9,7 @@ app = Flask(__name__)
 api_endpoint = 'https://covid-api.com/api'
 dates_file = 'dates.json'
 states_file = 'states.json'
+reports_file = 'reports.json'
 reports_dir = 'reports/'
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
          '<b>Covid 19 Statistics</b><p>'
@@ -24,80 +25,58 @@ def favicon():
 def home(path='/reports'):
   html = header + api_endpoint + path
   states = load_json(states_file)
-  for state in states:
-    html += '<table border=4>' + get_state_html(state) + '</table>'
-  return html
-
-
-def get_state_html(state):
-  html = ''
-  reports_list = []
-  growth = []
-  deaths = []
+  reports = load_json(reports_file)
   dates = load_json(dates_file)
-  for day in dates:
-    reports_list += get_reports_list(day)
-  for record in reports_list:
-    state_html, deaths = get_state_info_rows(state, record, dates, deaths)
-    html += state_html
-  growth_html, growth_rate = get_growth_rate_rows(deaths, dates)
-  html += growth_html
-  html += get_growth_chart_rows(growth_rate, dates)
+  for state in states:
+    html += '<table border=4>' + get_state_html(state, dates, reports) + '</table>'
   return html
 
 
-def get_state_info_rows(state, record, dates, deaths):
-  state_html = ''
-  if record['deaths']:
-    if record['region']['province'] == state and record['region']['iso'] == 'USA':
-      deaths.append(record['deaths'])
-      if record['date'] == dates[0] or record['date'] == dates[-1] or record['date'] == dates[-2]:
-        state_html += '<tr><td>' + record['region']['province'] + '</td><td>' + record['date'] + '</td>' + \
-                      '<td>' + str(record['deaths']) + '</td></tr>'
-  return state_html, deaths
+def get_state_html(state, dates, reports):
+  html = get_state_info_rows(state, dates, reports)
+  html += get_growth_rate_rows(state, reports)
+  html += get_growth_chart_rows(state, dates, reports)
+  return html
 
 
-def get_growth_rate_rows(deaths, dates):
-  growth_html = ''
-  growth_rate = []
-  for day in range(1, len(deaths)):
-    print('(' + str(deaths[day]) + '/' + str(deaths[0]) + ')**(1/' + str(day) + ')-1)')
-    growth_rate.append((deaths[day]/deaths[0])**(1/day)-1)
-  if growth_rate[-1] > growth_rate[-2]:
-    growth_html += get_growth_html('red', deaths, growth_rate)
-  else:
-    growth_html += get_growth_html('green', deaths, growth_rate)
-  return growth_html, growth_rate
+def get_state_info_rows(state, dates, reports):
+  html = ''
+  for record in reports:
+    if state == record['state']:
+      counter = 0
+      for deaths in record['deaths']:
+        if counter == 0 or counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
+          html += '<tr><td>' + state + '</td><td>' + str(dates[counter]) + '</td><td>' + str(deaths) + '</td></tr>'
+        counter = counter + 1
+  return html
 
 
-def get_growth_chart_rows(growth_rate, dates):
-  chart_html = '<tr><td colspan=3>' + str(growth_rate) + '<br>' + str(dates) + '</td></tr>'
-  #chart_html = '<tr><td colspan=3><table border=10 width=100%><tr height=100>'
-  #for entry in growth_rate:
-  #  if entry < .0001:
-  #    entry = .0001
-  #  chart_html += '<td bgcolor=blue><b>'
-  #  for x in range(1,int(entry*1000)):
-  #    chart_html += ' X '
-  #  chart_html += '</b></td>'
-  #chart_html += '</tr><tr>'
-  #for date in dates:
-  #  if date is not dates[0]:
-  #      chart_html += '<td>' + date[5:] + '</td>'
-  #chart_html += '</tr><tr>'
-  #for rate in growth_rate:
-  #  chart_html += '<td>' + str(round(rate,4)) + '</td>'
-  #chart_html += '</tr></table></td></tr>'
-  return chart_html
+def get_growth_rate_rows(state, reports):
+  html = ''
+  for record in reports:
+    if state == record['state']:
+      if record['rate'][-1] > record['rate'][-2]:
+        html += get_growth_html('red', record['deaths'], record['rate'])
+      else:
+        html += get_growth_html('green', record['deaths'], record['rate'])
+  return html
+
+
+def get_growth_chart_rows(state, dates, reports):
+  html = ''
+  for record in reports:
+    if state == record['state']:
+      html += '<tr><td colspan=3>' + str(record['rate']) + '<br>' + str(dates) + '</td></tr>'
+  return html
 
 
 def get_growth_html(color, deaths, growth_rate):
-  return '<tr><td bgcolor=' + color + '>current growth rate</td>' + \
+  return '<tr><td bgcolor=' + color + '>last growth rate</td>' + \
+         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + ' last:' + str(deaths[-2]) + ' len:' + str(len(deaths)-1) + '</td>' + \
+         '<td bgcolor=' + color + '>' + str(growth_rate[-2]) + '</td></tr>' + \
+         '<td bgcolor=' + color + '>current growth rate</td>' + \
          '<td bgcolor=' + color + '>first:' + str(deaths[0]) + ' last:' + str(deaths[-1]) + ' len:' + str(len(deaths)) + '</td>' + \
-         '<td bgcolor=' + color + '>' + str(growth_rate[-1]) + '</td></tr><tr>' + \
-         '<td bgcolor=' + color + '>last growth rate</td><td bgcolor=' + color + '>first:' + \
-         str(deaths[0]) + ' last:' + str(deaths[-2]) + ' len:' + str(len(deaths)-1) + '</td>' + \
-         '<td bgcolor=' + color + '>' + str(growth_rate[-2]) + '</td></tr>'
+         '<td bgcolor=' + color + '>' + str(growth_rate[-1]) + '</td></tr><tr>'
 
 
 def get_reports_list(day):

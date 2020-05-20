@@ -203,7 +203,7 @@ def make_dates():
     json.dump(dates, fileout)
 
 
-def make_states():
+def make_provinces():
   response = requests.get(api_endpoint + 'provinces/USA')
   for entry in json.loads(response.content)['data']:
     provinces.append(entry['province'].strip())
@@ -215,29 +215,43 @@ def make_states():
 
 
 def make_reports():
-  reports_list = []
+  raw_reports = []
   reports = []
+  reports_parsed = []
+  for day in dates:
+    with open(reports_dir + day + '_reports.json', 'r') as reports_in:
+      raw_reports = json.load(reports_in)
+    for records in raw_reports.values():
+      for record in records:
+        reports.append({'date': record['date'], 'state': record['region']['province'], 'deaths': record['deaths']})
+  for state in provinces:
+    state_deaths = []
+    growth_rate = []
+    for report in reports:
+      if state == report['state']:
+        state_deaths.append(report['deaths'])
+    for day in range(0, len(state_deaths)):
+      print('(' + str(state_deaths[day]) + '/' + str(state_deaths[0]) + ')**(1/' + str(day) + ')-1)')
+      if day == 0:
+        growth_rate.append(0.0000001)
+      else:
+        growth_rate.append((state_deaths[day]/state_deaths[0])**(1/day)-1)
+    reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'rate': growth_rate})
+
+  with open(reports_file, 'w') as fileout:
+    json.dump(reports_parsed, fileout)
+
+def get_raw_json():
   for day in dates:
     with open(reports_dir + day + '_' + reports_file, 'wb') as outjson:
       payload = {'date': day, 'iso': 'USA'}
       response = requests.get(api_endpoint + 'reports', params=payload)
       print('processing ' + response.url)
       outjson.write(response.content)
-    with open(reports_dir + day + '_reports.json', 'r') as reports_in:
-      reports_list = json.load(reports_in)['data']
-    for record in reports_list:
-      if record['region']['iso'] == 'USA':
-        state = record['region']['province']
-        deaths = record['deaths']
-        date = record['date']
-        reports.append([date, state, deaths])
-  print(reports)
-  with open(reports_file, 'w') as fileout:
-    json.dump(reports, fileout)
-
 
 def main():
-  make_states()
+  get_raw_json()
+  make_provinces()
   make_dates()
   make_reports()
 
