@@ -12,7 +12,7 @@ states_file = 'states.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
-         '<b>Covid 19 Statistics</b><p>'
+         '<b>Covid 19 US Statistics</b><p>'
 
 
 @app.route('/favicon.ico')
@@ -22,15 +22,34 @@ def favicon():
 
 
 @app.route('/')
-def home(path='/reports'):
-  html = header + api_endpoint + path
+def home():
   states = load_json(states_file)
   reports = load_json(reports_file)
   dates = load_json(dates_file)
+  html = header + get_warnings(states, reports)
   for state in states:
     html += '<table border=4>' + get_state_html(state, dates, reports) + '</table>'
   return html
 
+
+def get_warnings(states, reports):
+  danger = []
+  for state in states:
+    for record in reports:
+      if state == record['state']:
+        if record['danger'] == True:
+          danger.append(state)
+  return '<p>Total US deaths: <font color=red>' + str(death_total(reports)) + \
+         '</font><p>There are <font color=red>' + str(len(list(set(danger)))) + \
+         '</font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
+         '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
+
+
+def death_total(reports):
+  total = 0
+  for record in reports:
+    total = total + record['deaths'][-1]
+  return total
 
 def get_state_html(state, dates, reports):
   html = get_state_info_rows(state, dates, reports)

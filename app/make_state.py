@@ -227,6 +227,7 @@ def make_reports():
   for state in provinces:
     state_deaths = []
     growth_rate = []
+    state_danger = False
     for report in reports:
       if state == report['state']:
         state_deaths.append(report['deaths'])
@@ -236,7 +237,9 @@ def make_reports():
         growth_rate.append(0.0000001)
       else:
         growth_rate.append((state_deaths[day]/state_deaths[0])**(1/day)-1)
-    reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'rate': growth_rate})
+    if growth_rate[-1] > growth_rate[-2]:
+      state_danger = True;
+    reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'rate': growth_rate, 'danger': state_danger})
 
   with open(reports_file, 'w') as fileout:
     json.dump(reports_parsed, fileout)
@@ -250,7 +253,7 @@ def get_raw_json():
       outjson.write(response.content)
 
 def main():
-  get_raw_json()
+  #get_raw_json()
   make_provinces()
   make_dates()
   make_reports()
