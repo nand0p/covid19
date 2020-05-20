@@ -1,10 +1,13 @@
-import json
+import matplotlib
+import matplotlib.pyplot as plt
 import requests
+import json
 
 provinces = []
 provinces_file = 'states.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
+image_dir = 'static/images/'
 date_file = 'dates.json'
 api_endpoint = 'https://covid-api.com/api/'
 dates = [
@@ -213,6 +216,7 @@ def make_provinces():
   print('states: ' + str(provinces))
   with open(provinces_file, 'w') as fileout:
     json.dump(provinces, fileout)
+  return provinces
 
 
 def make_reports():
@@ -241,9 +245,10 @@ def make_reports():
     if growth_rate[-1] > growth_rate[-2]:
       state_danger = True;
     reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'rate': growth_rate, 'danger': state_danger})
-
   with open(reports_file, 'w') as fileout:
     json.dump(reports_parsed, fileout)
+  return reports_parsed
+
 
 def get_raw_json():
   for day in dates:
@@ -253,11 +258,22 @@ def get_raw_json():
       print('processing ' + response.url)
       outjson.write(response.content)
 
+
+def make_images(reports, states):
+  for record in reports:
+    plt.clf()
+    plt.plot(dates,record['rate'])
+    plt.ylabel('growth rates')
+    plt.xlabel('dates')
+    plt.savefig(image_dir + record['state'] + '.png', transparent=True)
+
+
 def main():
   get_raw_json()
-  make_provinces()
   make_dates()
-  make_reports()
+  states = make_provinces()
+  reports = make_reports()
+  make_images(reports, states)
 
 
 if __name__ == '__main__':

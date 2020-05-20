@@ -1,18 +1,19 @@
 from flask import Flask, send_from_directory
 from utils import load_json
+import urllib.parse
 import requests
 import json
 import os
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 api_endpoint = 'https://covid-api.com/api'
 dates_file = 'dates.json'
 states_file = 'states.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
-         '<b>Covid 19 US Statistics</b><p>'
+         '<h1>Covid-19 US Statistics</h1><p>'
 
 
 @app.route('/favicon.ico')
@@ -28,7 +29,9 @@ def home():
   dates = load_json(dates_file)
   html = header + get_warnings(states, reports)
   for state in states:
-    html += '<table border=4>' + get_state_html(state, dates, reports) + '</table>'
+    html += '<table border=30 width=100%>' + \
+            get_state_info_rows(state, dates, reports) + \
+            get_growth_rate_rows(state, reports) + '</table>'
   return html
 
 
@@ -51,12 +54,6 @@ def death_total(reports):
     total = total + record['deaths'][-1]
   return total
 
-def get_state_html(state, dates, reports):
-  html = get_state_info_rows(state, dates, reports)
-  html += get_growth_rate_rows(state, reports)
-  html += get_growth_chart_rows(state, dates, reports)
-  return html
-
 
 def get_state_info_rows(state, dates, reports):
   html = ''
@@ -64,8 +61,13 @@ def get_state_info_rows(state, dates, reports):
     if state == record['state']:
       counter = 0
       for deaths in record['deaths']:
-        if counter == 0 or counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
-          html += '<tr><td>' + state + '</td><td>' + str(dates[counter]) + '</td><td>' + str(deaths) + '</td></tr>'
+        if counter == 0:
+          html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + str(dates[counter]) + '</td>' + \
+                  '<td>' + str(deaths) + '</td><td rowspan=6><img src=/static/images/' + \
+                  urllib.parse.quote(state) + '.png></td></tr>'
+        if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
+          html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
+                  '<td>' + str(deaths) + '</td></tr>'
         counter = counter + 1
   return html
 
@@ -78,14 +80,6 @@ def get_growth_rate_rows(state, reports):
         html += get_growth_html('red', record['deaths'], record['rate'])
       else:
         html += get_growth_html('green', record['deaths'], record['rate'])
-  return html
-
-
-def get_growth_chart_rows(state, dates, reports):
-  html = ''
-  for record in reports:
-    if state == record['state']:
-      html += '<tr><td colspan=3>' + str(record['rate']) + '<br>' + str(dates) + '</td></tr>'
   return html
 
 

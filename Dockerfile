@@ -1,10 +1,11 @@
-FROM python:alpine3.7
+FROM python:buster
 
 COPY . .
 WORKDIR /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 RUN python make_state.py
+RUN ls -la
 
 ENV FLASK_APP index.py
 ENV FLASK_ENV development
