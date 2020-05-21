@@ -11,6 +11,6 @@ RUN sed -i "s|SEDME|$REVISION -- $DATE|g" index.py
 RUN python make_state.py
 
 ENV FLASK_APP index.py
-ENV FLASK_ENV development
+ENV FLASK_ENV production
 ENV FLASK_DEBUG 1
 CMD ["flask", "run", "--host=0.0.0.0"]
