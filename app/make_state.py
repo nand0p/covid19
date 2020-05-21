@@ -236,7 +236,7 @@ def make_reports():
       if state == report['state']:
         state_deaths.append(report['deaths'])
     for day in range(0, len(state_deaths)):
-      print('(' + str(state_deaths[day]) + '/' + str(state_deaths[0]) + ')**(1/' + str(day) + ')-1)')
+      #print('(' + str(state_deaths[day]) + '/' + str(state_deaths[0]) + ')**(1/' + str(day) + ')-1)')
       if day == 0:
         growth_rate.append(0.0000001)
       else:
