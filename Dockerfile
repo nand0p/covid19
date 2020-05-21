@@ -6,7 +6,7 @@ WORKDIR /app
 ARG DATE
 ARG REVISION
 
-RUN sed -i s/$DATE-$REVISION/SEDME/g app/index.py
+RUN sed -i 's|$DATE-$REVISION|SEDME|g' app/index.py
 RUN pip install -r requirements.txt
 RUN python make_state.py
 RUN ls -la
