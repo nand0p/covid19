@@ -42,9 +42,9 @@ def get_warnings(states, reports):
       if state == record['state']:
         if record['danger'] == True:
           danger.append(state)
-  return '<p>Total US deaths: <font color=red>' + str(death_total(reports)) + \
-         '</font> -- SEDME<p>There are <font color=red>' + str(len(list(set(danger)))) + \
-         '</font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
+  return '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
+         '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
+         '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
          '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
 
 
