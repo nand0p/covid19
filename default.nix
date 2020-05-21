@@ -2,8 +2,10 @@ with import <nixpkgs> {};
 stdenv.mkDerivation {
   name = "covid19";
   buildInputs = [
-    gcc8
+    gcc6
     ncurses
     libstdcxx5
+    stdenv.cc.cc.lib
+    libgcc
   ];
 }
