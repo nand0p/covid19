@@ -9,9 +9,11 @@ import os
 app = Flask(__name__, static_url_path='/static')
 api_endpoint = 'https://covid-api.com/api'
 dates_file = 'dates.json'
-states_file = 'states.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
+states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+print(len(states))
+
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
          '<h1>Covid-19 US Statistics</h1><p>'
 
@@ -24,10 +26,9 @@ def favicon():
 
 @app.route('/')
 def home():
-  states = load_json(states_file)
   reports = load_json(reports_file)
   dates = load_json(dates_file)
-  html = header + get_warnings(states, reports)
+  html = header + get_warnings(reports)
   for state in states:
     html += '<table border=30 width=100%>' + \
             get_state_info_rows(state, dates, reports) + \
@@ -35,7 +36,7 @@ def home():
   return html
 
 
-def get_warnings(states, reports):
+def get_warnings(reports):
   danger = []
   for state in states:
     for record in reports:
