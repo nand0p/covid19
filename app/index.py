@@ -50,7 +50,7 @@ def get_warnings(reports):
   return '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
          '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
          '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
-         '<p>Top rate growth:<br>' + str(score[-1]) + '<br>' + str(score[-2]) + '<br>' + str(score[-3]) + \
+         '<p>Top rate growth:<br>----------------<br>' + str(score[-1]) + '<br>' + str(score[-2]) + '<br>' + str(score[-3]) + \
          '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
 
 
