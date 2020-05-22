@@ -65,7 +65,7 @@ def get_state_info_rows(state, dates, reports):
         if counter == 0:
           html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + str(dates[counter]) + '</td>' + \
                   '<td>' + str(deaths) + '</td><td rowspan=6><img src=/static/images/' + \
-                  urllib.parse.quote(state) + '.png></td></tr>'
+                  urllib.parse.quote(state) + '.png width=100%><br>' + str(dates) + '</td></tr>'
         if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
           html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
                   '<td>' + str(deaths) + '</td></tr>'
