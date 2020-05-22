@@ -12,7 +12,6 @@ dates_file = 'dates.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
 states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
-print(len(states))
 
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
          '<h1>Covid-19 US Statistics</h1><p>'
@@ -38,19 +37,26 @@ def home():
 
 def get_warnings(reports):
   danger = []
-  score = []
+  rates = []
+  deaths = []
   for state in states:
     for record in reports:
       if state == record['state']:
         if record['danger'] == True:
           danger.append(state)
         rate = record['rate'][-1]
-        score.append(str(rate) + '-' + str(state))
-  score.sort()
+        death = record['deaths'][-1]
+        rates.append([rate, state])
+        deaths.append([death, state])
+  rates.sort()
+  deaths.sort()
   return '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
          '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
          '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
-         '<p>Top rate growth:<br>----------------<br>' + str(score[-1]) + '<br>' + str(score[-2]) + '<br>' + str(score[-3]) + \
+         '<p>Top rate growth:<br>-------------------------<br>' + str(rates[-1]) + '<br>' + str(rates[-2]) + \
+         '<br>' + str(rates[-3]) + '<br>' + str(rates[-4]) + '<br>' + str(rates[-5]) + \
+         '<p>Top deaths:<br>-------------------<br>' + str(deaths[-1]) + '<br>' + str(deaths[-2]) + \
+         '<br>' + str(deaths[-3]) + '<br>' + str(deaths[-4]) + '<br>' + str(deaths[-5]) + \
          '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
 
 
