@@ -101,8 +101,8 @@ def make_images(reports):
   for record in reports:
     plt.clf()
     plt.plot(dates,record['rate'])
-    plt.ylabel('growth rates')
-    plt.xlabel('dates')
+    plt.ylabel('Growth Rate')
+    plt.xlabel('Dates')
     plt.savefig(image_dir + record['state'] + '.png', transparent=True)
 
 
