@@ -55,7 +55,7 @@ def get_warnings(reports):
          '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
          '<p>Top rate growth:<br>-------------------------<br>' + str(rates[-1]) + '<br>' + str(rates[-2]) + \
          '<br>' + str(rates[-3]) + '<br>' + str(rates[-4]) + '<br>' + str(rates[-5]) + \
-         '<p>Top deaths:<br>-------------------<br>' + str(deaths[-1]) + '<br>' + str(deaths[-2]) + \
+         '<p>Top deaths:<br>-----------------<br>' + str(deaths[-1]) + '<br>' + str(deaths[-2]) + \
          '<br>' + str(deaths[-3]) + '<br>' + str(deaths[-4]) + '<br>' + str(deaths[-5]) + \
          '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
 
