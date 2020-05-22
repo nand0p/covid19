@@ -8,7 +8,6 @@ docker build -t covid19-dev \
 
 docker kill covid19-dev 2> /dev/null || true
 
-echo "pause"
 sleep 2
 
 docker run --rm \
