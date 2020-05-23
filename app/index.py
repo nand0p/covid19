@@ -11,10 +11,12 @@ api_endpoint = 'https://covid-api.com/api'
 dates_file = 'dates.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
-states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />''<h1>Covid-19 US Statistics</h1><p>'
+footer = '<p<br><center>If you find this useful, please contribute:<br><b>' + \
+         'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
+         'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A'
 
-header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />' + \
-         '<h1>Covid-19 US Statistics</h1><p>'
+states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
 
 
 @app.route('/favicon.ico')
@@ -32,6 +34,7 @@ def home():
     html += '<table border=30 width=100%>' + \
             get_state_info_rows(state, dates, reports) + \
             get_growth_rate_rows(state, reports) + '</table>'
+  html += footer
   return html
 
 
