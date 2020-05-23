@@ -54,10 +54,12 @@ def get_scoreboard(reports):
           '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
           '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
           '<p>Top rate growth:<br>-------------------------<br>'
-  for r in range(-1,-10):
+  for r in range(9, 1, -1):
+    r = r - 10
     html += str(rates[r]) + '<br>'
   html += '<p>Top deaths:<br>-----------------<br>'
-  for r in range(-1,-10):
+  for r in range(9, 1, -1):
+    r = r - 10
     html += str(deaths[r]) + '<br>'
   html += '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
   return html
