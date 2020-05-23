@@ -27,7 +27,7 @@ def favicon():
 def home():
   reports = load_json(reports_file)
   dates = load_json(dates_file)
-  html = header + get_warnings(reports)
+  html = header + get_scoreboard(reports)
   for state in states:
     html += '<table border=30 width=100%>' + \
             get_state_info_rows(state, dates, reports) + \
@@ -35,7 +35,7 @@ def home():
   return html
 
 
-def get_warnings(reports):
+def get_scoreboard(reports):
   danger = []
   rates = []
   deaths = []
@@ -50,14 +50,17 @@ def get_warnings(reports):
         deaths.append([death, state])
   rates.sort()
   deaths.sort()
-  return '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
-         '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
-         '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
-         '<p>Top rate growth:<br>-------------------------<br>' + str(rates[-1]) + '<br>' + str(rates[-2]) + \
-         '<br>' + str(rates[-3]) + '<br>' + str(rates[-4]) + '<br>' + str(rates[-5]) + \
-         '<p>Top deaths:<br>-----------------<br>' + str(deaths[-1]) + '<br>' + str(deaths[-2]) + \
-         '<br>' + str(deaths[-3]) + '<br>' + str(deaths[-4]) + '<br>' + str(deaths[-5]) + \
-         '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
+  html = '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
+          '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
+          '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
+          '<p>Top rate growth:<br>-------------------------<br>'
+  for r in range(-1,-10):
+    html += str(rates[r]) + '<br>'
+  html += '<p>Top deaths:<br>-----------------<br>'
+  for r in range(-1,-10):
+    html += str(deaths[r]) + '<br>'
+  html += '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
+  return html
 
 
 def death_total(reports):
