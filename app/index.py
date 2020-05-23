@@ -12,7 +12,7 @@ dates_file = 'dates.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />''<h1>Covid-19 US Statistics</h1><p>'
-footer = '<p<br><center>If you find this useful, please contribute:<br><b>' + \
+footer = '<p<br><center><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
          'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
          'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A'
 

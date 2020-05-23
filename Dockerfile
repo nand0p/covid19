@@ -1,5 +1,7 @@
 FROM python:buster
 
+MAINTAINER "nando" <nando@hex7.com>
+
 ARG DATE
 ARG REVISION
 
@@ -8,6 +10,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 
 RUN sed -i "s|SEDME|$REVISION -- $DATE|g" index.py
+RUN cat index.py
 RUN python make_state.py
 
 ENV FLASK_APP index.py
