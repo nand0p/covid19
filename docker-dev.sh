@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 
 docker build --no-cache \
 	     -t covid19-dev \
