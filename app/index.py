@@ -12,7 +12,8 @@ dates_file = 'dates.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
 header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />''<h1>Covid-19 US Statistics</h1><p>'
-footer = '<p<br><center><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
+footer = '<center><p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University' + \
+         '<p>SEDME<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
          'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
          'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A'
 
@@ -40,38 +41,47 @@ def home():
 
 def get_scoreboard(reports):
   danger = []
-  rates = []
+  death_growth_rates = []
   deaths = []
+  confirmed_growth_rates = []
+  confirmed = []
   for state in states:
     for record in reports:
       if state == record['state']:
         if record['danger'] == True:
           danger.append(state)
-        rate = record['rate'][-1]
+        death_growth_rate = record['death_growth_rate'][-1]
+        confirmed_growth_rate = record['confirmed_growth_rate'][-1]
         death = record['deaths'][-1]
-        rates.append([rate, state])
+        confirm = record['confirmed'][-1]
+        death_growth_rates.append([death_growth_rate, state])
+        confirmed_growth_rates.append([confirmed_growth_rate, state])
         deaths.append([death, state])
-  rates.sort()
+        confirmed.append([confirm, state])
+  death_growth_rates.sort()
+  confirmed_growth_rates.sort()
   deaths.sort()
-  html = '<p>Total US deaths: <font color=red><b>' + str(death_total(reports)) + \
-          '</b></font> -- SEDME<p>There are <font color=red><b>' + str(len(list(set(danger)))) + \
-          '</b></font> states with an <font color=red>increasing</font> growth rate: ' + str(list(set(danger))) + \
-          '<p>Top rate growth:<br>-------------------------<br>'
-  for r in range(9, 1, -1):
-    r = r - 10
-    html += str(rates[r]) + '<br>'
-  html += '<p>Top deaths:<br>-----------------<br>'
-  for r in range(9, 1, -1):
-    r = r - 10
-    html += str(deaths[r]) + '<br>'
-  html += '<p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University'
-  return html
+  confirmed.sort()
+  return '<p>Total US deaths: <font color=red><b>' + str(calculate_totals(reports, 'deaths')) + '</b></font><p>' + \
+         'Total US confirmed infections: <font color=red><b>' + str(calculate_totals(reports, 'confirmed')) + '</b></font><p>' + \
+         'There are <font color=red><b>' + str(len(list(set(danger)))) + '</b></font>' + \
+         ' states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + str(list(set(danger))) + \
+         '<p>Top infections:<br>-------------------------<br>' + calculate_top_ten(confirmed) + \
+         '<p>Top deaths:<br>-------------------------<br>' + calculate_top_ten(deaths)
 
 
-def death_total(reports):
+def calculate_top_ten(type):
+  top_ten = ''
+  for count in range(9, 1, -1):
+    count = count - 10
+    top_ten += str(type[count]) + '<br>'
+  return top_ten
+    
+
+def calculate_totals(reports, report_type):
   total = 0
   for record in reports:
-    total = total + record['deaths'][-1]
+    total = total + record[report_type][-1]
   return total
 
 
@@ -83,33 +93,33 @@ def get_state_info_rows(state, dates, reports):
       for deaths in record['deaths']:
         if counter == 0:
           html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + str(dates[counter]) + '</td>' + \
-                  '<td>' + str(deaths) + '</td><td rowspan=6><img src=/static/images/' + \
+                  '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][0]) + '</td><td rowspan=6><img src=/static/images/' + \
                   urllib.parse.quote(state) + '.png width=100%><br>' + str(dates) + '</td></tr>'
         if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
           html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
-                  '<td>' + str(deaths) + '</td></tr>'
+                  '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][counter]) + '</td></tr>'
         counter = counter + 1
   return html
 
 
 def get_growth_rate_rows(state, reports):
-  html = ''
   for record in reports:
     if state == record['state']:
-      if record['rate'][-1] > record['rate'][-2]:
-        html += get_growth_html('red', record['deaths'], record['rate'])
+      if record['danger']:
+        return get_growth_html('red', record['deaths'], record['death_growth_rate'], record['confirmed'], record['confirmed_growth_rate'])
       else:
-        html += get_growth_html('green', record['deaths'], record['rate'])
-  return html
+        return get_growth_html('green', record['deaths'], record['death_growth_rate'], record['confirmed'], record['confirmed_growth_rate'])
 
 
-def get_growth_html(color, deaths, growth_rate):
-  return '<tr><td bgcolor=' + color + '>last growth rate</td>' + \
-         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + ' last:' + str(deaths[-2]) + ' len:' + str(len(deaths)-1) + '</td>' + \
-         '<td bgcolor=' + color + '>' + str(growth_rate[-2]) + '</td></tr>' + \
-         '<td bgcolor=' + color + '>current growth rate</td>' + \
-         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + ' last:' + str(deaths[-1]) + ' len:' + str(len(deaths)) + '</td>' + \
-         '<td bgcolor=' + color + '>' + str(growth_rate[-1]) + '</td></tr><tr>'
+def get_growth_html(color, deaths, death_growth_rate, confirmed, confirmed_growth_rate):
+  return '<tr><td bgcolor=' + color + '>last growth rates</td>' + \
+         '<td bgcolor=' + color + '>first: ' + str(deaths[0]) + '<br>last: ' + str(deaths[-2]) + '<br>len: ' + str(len(deaths)-1) + '<p>' + \
+         '<br>first: ' + str(confirmed[0]) + '<br>last: ' + str(confirmed[-2]) + '<br>len: ' + str(len(confirmed)-1) + '</td>' + \
+         '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-2]) + '<p>infection: ' + str(confirmed_growth_rate[-2]) + '</td></tr>' + \
+         '<tr><td bgcolor=' + color + '>current growth rates</td>' + \
+         '<td bgcolor=' + color + '>first: ' + str(deaths[0]) + '<br>last: ' + str(deaths[-1]) + '<br>len: ' + str(len(deaths)) + '<p>' + \
+         'first: ' + str(confirmed[0]) + '<br>last: ' + str(confirmed[-1]) + '<br>len: ' + str(len(confirmed)) + '</td>' + \
+         '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-1]) + '<p>infection: ' + str(confirmed_growth_rate[-1]) + '</td></tr><tr>'
 
 
 def get_reports_list(day):

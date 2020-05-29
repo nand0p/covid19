@@ -74,23 +74,32 @@ def make_reports():
       raw_reports = json.load(reports_in)
     for records in raw_reports.values():
       for record in records:
-        reports.append({'date': record['date'], 'state': record['region']['province'], 'deaths': record['deaths']})
+          reports.append({'date': record['date'], 'state': record['region']['province'], 'deaths': record['deaths'], 'confirmed': record['confirmed'], 'deaths_diff': record['deaths_diff'], 'confirmed_diff': record['confirmed_diff']})
   for state in states:
     state_deaths = []
-    growth_rate = []
+    death_growth_rate = []
+    state_confirmed = []
+    confirmed_growth_rate = []
     state_danger = False
     for report in reports:
       if state == report['state']:
         state_deaths.append(report['deaths'])
+        state_confirmed.append(report['confirmed'])
     for day in range(0, len(state_deaths)):
       #print('(' + str(state_deaths[day]) + '/' + str(state_deaths[0]) + ')**(1/' + str(day) + ')-1)')
       if day == 0:
-        growth_rate.append(0.0000001)
+        death_growth_rate.append(0.0000001)
       else:
-        growth_rate.append((state_deaths[day]/state_deaths[0])**(1/day)-1)
-    if growth_rate[-1] > growth_rate[-2]:
+        death_growth_rate.append((state_deaths[day]/state_deaths[0])**(1/day)-1)
+    for day in range(0, len(state_confirmed)):
+      #print('(' + str(state_confirmed[day]) + '/' + str(state_confirmed[0]) + ')**(1/' + str(day) + ')-1)')
+      if day == 0:
+        confirmed_growth_rate.append(0.0000001)
+      else:
+        confirmed_growth_rate.append((state_confirmed[day]/state_confirmed[0])**(1/day)-1)
+    if death_growth_rate[-1] > death_growth_rate[-2] or confirmed_growth_rate[-1] > confirmed_growth_rate[-2]:
       state_danger = True;
-    reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'rate': growth_rate, 'danger': state_danger})
+    reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'confirmed': state_confirmed, 'confirmed_growth_rate': confirmed_growth_rate, 'death_growth_rate': death_growth_rate, 'danger': state_danger})
   with open(reports_file, 'w') as fileout:
     json.dump(reports_parsed, fileout)
   return reports_parsed
@@ -108,8 +117,9 @@ def get_raw_json():
 def make_images(reports):
   for record in reports:
     plt.clf()
-    plt.plot(dates,record['rate'])
-    plt.ylabel('Growth Rate')
+    plt.plot(dates,record['death_growth_rate'])
+    plt.plot(dates,record['confirmed_growth_rate'])
+    plt.ylabel('Growth Rates')
     plt.xlabel('Dates')
     plt.savefig(image_dir + record['state'] + '.png', transparent=True)
 
