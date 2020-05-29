@@ -66,8 +66,8 @@ def get_scoreboard(reports):
          'Total US confirmed infections: <font color=red><b>' + str(calculate_totals(reports, 'confirmed')) + '</b></font><p>' + \
          'There are <font color=red><b>' + str(len(list(set(danger)))) + '</b></font>' + \
          ' states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + str(list(set(danger))) + \
-         '<p>Top infections:<br>-------------------------<br>' + calculate_top_ten(confirmed) + \
-         '<p>Top deaths:<br>-------------------------<br>' + calculate_top_ten(deaths)
+         '<p><table cellpadding=30><tr><td>Top Infections:<br>-------------------------<br>' + calculate_top_ten(confirmed) + \
+         '</td><td><p>Top Deaths:<br>-------------------------<br>' + calculate_top_ten(deaths) + '</td></tr></table><p>'
 
 
 def calculate_top_ten(type):
