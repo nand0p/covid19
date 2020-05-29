@@ -66,13 +66,15 @@ def get_scoreboard(reports):
          'Total US confirmed infections: <font color=red><b>' + str(calculate_totals(reports, 'confirmed')) + '</b></font><p>' + \
          'There are <font color=red><b>' + str(len(list(set(danger)))) + '</b></font>' + \
          ' states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + str(list(set(danger))) + \
-         '<p><table cellpadding=30><tr><td>Top Infections:<br>-------------------------<br>' + calculate_top_ten(confirmed) + \
-         '</td><td><p>Top Deaths:<br>-------------------------<br>' + calculate_top_ten(deaths) + '</td></tr></table><p>'
+         '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + calculate_top_ten(confirmed) + '</td>' + \
+         '<td><p>Top Deaths:<hr>' + calculate_top_ten(deaths) + '</td>' + \
+         '<td><p>Top Infection Growth<hr>' + calculate_top_ten(confirmed_growth_rates) + '</td>' + \
+         '<td><p>Top Death Growth<hr>' + calculate_top_ten(death_growth_rates) + '</td></tr></table><p>'
 
 
 def calculate_top_ten(type):
   top_ten = ''
-  for count in range(9, 1, -1):
+  for count in range(9, -1, -1):
     count = count - 10
     top_ten += str(type[count]) + '<br>'
   return top_ten

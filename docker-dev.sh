@@ -1,6 +1,7 @@
 #!/bin/sh
 
-docker build -t covid19-dev \
+docker build --no-cache \
+	     -t covid19-dev \
 	     -f Dockerfile \
 	     --build-arg "DATE=$(date +%s)" \
 	     --build-arg "REVISION=$(git rev-parse HEAD)" \
