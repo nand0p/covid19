@@ -69,8 +69,8 @@ def get_scoreboard(reports):
          'Total US confirmed infections: <font color=red><b>' + str(calculate_totals(reports, 'confirmed')) + '</b></font><p>' + \
          'There are <font color=red><b>' + str(len(list(set(danger)))) + '</b></font>' + \
          ' states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + str(list(set(danger))) + \
-         '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + calculate_top_ten(confirmed) + '</td>' + \
-         '<td><p>Top Deaths:<hr>' + calculate_top_ten(deaths) + '</td>' + \
+         '<p><table cellpadding=30><tr><td>Top Infections Confirmed:<hr>' + calculate_top_ten(confirmed) + '</td>' + \
+         '<td><p>Top Deaths Confirmed:<hr>' + calculate_top_ten(deaths) + '</td>' + \
          '<td><p>Top Infection Growth:<hr>' + calculate_top_ten(confirmed_growth_rates) + '</td>' + \
          '<td><p>Top Death Growth:<hr>' + calculate_top_ten(death_growth_rates) + '</td></tr></table><p>'
 
@@ -118,12 +118,12 @@ def get_growth_rate_rows(state, reports):
 
 def get_growth_html(color, deaths, death_growth_rate, confirmed, confirmed_growth_rate):
   return '<tr><td bgcolor=' + color + '>last growth rates</td>' + \
-         '<td bgcolor=' + color + '>first: ' + str(deaths[0]) + '<br>last: ' + str(deaths[-2]) + '<br>len: ' + str(len(deaths)-1) + '<p>' + \
-         '<br>first: ' + str(confirmed[0]) + '<br>last: ' + str(confirmed[-2]) + '<br>len: ' + str(len(confirmed)-1) + '</td>' + \
+         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + '<br>last:' + str(deaths[-2]) + \
+         '<br>first:' + str(confirmed[0]) + '<br>last:' + str(confirmed[-2]) + '<br>len:' + str(len(confirmed)-1) + '</td>' + \
          '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-2]) + '<p>infection: ' + str(confirmed_growth_rate[-2]) + '</td></tr>' + \
          '<tr><td bgcolor=' + color + '>current growth rates</td>' + \
-         '<td bgcolor=' + color + '>first: ' + str(deaths[0]) + '<br>last: ' + str(deaths[-1]) + '<br>len: ' + str(len(deaths)) + '<p>' + \
-         'first: ' + str(confirmed[0]) + '<br>last: ' + str(confirmed[-1]) + '<br>len: ' + str(len(confirmed)) + '</td>' + \
+         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + '<br>last:' + str(deaths[-1]) + \
+         'first:' + str(confirmed[0]) + '<br>last:' + str(confirmed[-1]) + '<br>len:' + str(len(confirmed)) + '</td>' + \
          '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-1]) + '<p>infection: ' + str(confirmed_growth_rate[-1]) + '</td></tr><tr>'
 
 
