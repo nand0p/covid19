@@ -11,7 +11,10 @@ api_endpoint = 'https://covid-api.com/api'
 dates_file = 'dates.json'
 reports_file = 'reports.json'
 reports_dir = 'reports/'
-header = '<link rel="icon" type="image/x-icon" href="favicon.ico" />''<h1>Covid-19 US Statistics</h1><p>'
+header = '<html><link rel="icon" type="image/x-icon" href="favicon.ico" /><head><title>Covid-19 US Statistics</title>' + \
+         '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />' + \
+         '<meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Expires" content="0" />' + \
+         '</head><body><h1>Covid-19 US Statistics</h1><p>'
 footer = '<center><p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University' + \
          '<p>SEDME<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
          'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
@@ -96,7 +99,7 @@ def get_state_info_rows(state, dates, reports):
         if counter == 0:
           html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + str(dates[counter]) + '</td>' + \
                   '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][0]) + '</td><td rowspan=6><img src=/static/images/' + \
-                  urllib.parse.quote(state) + '.png width=100%><br>' + str(dates) + '</td></tr>'
+                  urllib.parse.quote(state) + '.png width=100%><br><center><b>' + str(dates[0]) + '</b> to <b>' + str(dates[-1]) + '<b></center></td></tr>'
         if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
           html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
                   '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][counter]) + '</td></tr>'

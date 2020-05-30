@@ -91,13 +91,13 @@ def make_reports():
       if day == 0:
         death_growth_rate.append(0.0000001)
       else:
-        death_growth_rate.append((state_deaths[day]/state_deaths[0])**(1/day)-1)
+        death_growth_rate.append(round((state_deaths[day]/state_deaths[0])**(1/day)-1, 7))
     for day in range(0, len(state_confirmed)):
       #print('(' + str(state_confirmed[day]) + '/' + str(state_confirmed[0]) + ')**(1/' + str(day) + ')-1)')
       if day == 0:
         confirmed_growth_rate.append(0.0000001)
       else:
-        confirmed_growth_rate.append((state_confirmed[day]/state_confirmed[0])**(1/day)-1)
+        confirmed_growth_rate.append(round((state_confirmed[day]/state_confirmed[0])**(1/day)-1, 7))
     if death_growth_rate[-1] > death_growth_rate[-2] or confirmed_growth_rate[-1] > confirmed_growth_rate[-2]:
       state_danger = True;
     reports_parsed.append({'state': state, 'dates': dates, 'deaths': state_deaths, 'confirmed': state_confirmed, 'confirmed_growth_rate': confirmed_growth_rate, 'death_growth_rate': death_growth_rate, 'danger': state_danger})
