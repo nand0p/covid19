@@ -79,7 +79,8 @@ def calculate_top_ten(type):
   top_ten = ''
   for count in range(9, -1, -1):
     count = count - 10
-    top_ten += str(type[count][0]) + '___' + str(type[count][1]) + '<br>'
+    top_ten += str(type[count][0]).replace(' ', '_')  + '___' + \
+               str(type[count][1]).replace(' ', '_') + '<br>'
   return top_ten
     
 
