@@ -15,9 +15,9 @@ header = '<html><link rel="icon" type="image/x-icon" href="favicon.ico" /><head>
          '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />' + \
          '<meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Expires" content="0" />' + \
          '<!-- Global site tag (gtag.js) - Google Analytics -->' + \
-         '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168115065-1"></script>' + \
+         '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-32710227-2"></script>' + \
          '<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}' + \
-         'gtag("js", new Date()); gtag("config", "UA-168115065-1");</script>' + \
+         'gtag("js", new Date()); gtag("config", "UA-32710227-2"); </script>' + \
          '</head><body><h1>Covid-19 US Statistics</h1><p>'
 footer = '<center><p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University' + \
          '<p>SEDME<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
