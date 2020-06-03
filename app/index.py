@@ -18,6 +18,8 @@ header = '<html><link rel="icon" type="image/x-icon" href="favicon.ico" /><head>
          '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-32710227-2"></script>' + \
          '<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}' + \
          'gtag("js", new Date()); gtag("config", "UA-32710227-2"); </script>' + \
+         '<script data-ad-client="ca-pub-9792012528290289" async ' + \
+         'src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>' + \
          '</head><body><h1>Covid-19 US Statistics</h1><p>'
 footer = '<center><p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University' + \
          '<p>SEDME<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
