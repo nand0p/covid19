@@ -22,7 +22,8 @@ header = '<html><link rel="icon" type="image/x-icon" href="favicon.ico" /><head>
          'src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>' + \
          '</head><body><h1>Covid-19 US Statistics</h1><p>'
 footer = '<center><p>COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University' + \
-         '<p>SEDME<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a><p>If you find this useful, please contribute:<br><b>' + \
+         '<p>SEDME -- Hex7 Internet Solutions<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a>' + \
+         '<p>If you find this useful, please contribute:<br><b>' + \
          'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
          'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A'
 
