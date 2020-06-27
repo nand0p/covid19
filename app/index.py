@@ -2,6 +2,7 @@ from flask import Flask, send_from_directory
 from utils import load_json
 import urllib.parse
 import requests
+import hashlib
 import json
 import os
 
@@ -139,13 +140,21 @@ def get_state_info_rows(state, dates, reports):
       for deaths in record['deaths']:
         if counter == 0:
           html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + str(dates[counter]) + '</td>' + \
-                  '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][0]) + '</td><td rowspan=6><img src=/static/images/' + \
-                  urllib.parse.quote(state) + '.png width=100%><br><center><b>' + str(dates[0]) + '</b> to <b>' + str(dates[-1]) + '<b></center></td></tr>'
+                  '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][0]) + '</td>' + \
+                  '<td rowspan=6><img src=/static/images/' + \
+                  urllib.parse.quote(state) + '.' + _get_date_hash() + '.png width=100%></td></tr>'
         if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
           html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
                   '<td>deaths: ' + str(deaths) + '<br>infections: ' + str(record['confirmed'][counter]) + '</td></tr>'
         counter = counter + 1
   return html
+
+
+def _get_date_hash():
+  with open(dates_file, 'rb') as f:
+    bytes = f.read()
+    dates_hash = hashlib.sha256(bytes).hexdigest()
+  return dates_hash
 
 
 def get_growth_rate_rows(state, reports):
