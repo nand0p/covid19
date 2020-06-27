@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
+from utils import get_dates_hash
 import matplotlib.pyplot as plt
 import requests
-import hashlib
 import pandas
 import json
 
@@ -97,14 +97,7 @@ def make_images(reports):
     plt.plot(_plot_dates(),record['confirmed_growth_rate'])
     plt.ylabel('Growth Rates')
     plt.xlabel('Dates')
-    plt.savefig(image_dir + record['state'] + '.' + _get_date_hash() + '.png', transparent=True)
-
-
-def _get_date_hash():
-  with open(dates_file, 'rb') as f:
-    bytes = f.read()
-    dates_hash = hashlib.sha256(bytes).hexdigest()
-  return dates_hash
+    plt.savefig(image_dir + record['state'] + '.' + get_dates_hash(dates_file) + '.png', transparent=True)
 
 
 def _plot_dates():

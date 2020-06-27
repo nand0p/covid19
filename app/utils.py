@@ -1,4 +1,5 @@
 import requests
+import hashlib
 import json
 
 
@@ -26,3 +27,10 @@ def parse_totals(json):
     html += '<tr><td>' + key + '</td><td>' + str(value) + '</td></tr>'
   html += '</table>'
   return html
+
+
+def get_dates_hash(dates_file):
+  with open(dates_file, 'rb') as f:
+    bytes = f.read()
+    dates_hash = hashlib.sha256(bytes).hexdigest()
+  return dates_hash
