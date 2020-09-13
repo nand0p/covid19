@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import requests
 import pandas
 import json
+import time
 
 provinces = []
 provinces_file = 'states.json'
@@ -81,6 +82,7 @@ def get_raw_json():
       response = requests.get(api_endpoint + 'reports', params=payload)
       print('processing ' + response.url)
       outjson.write(response.content)
+      time.sleep(1)
 
 
 def make_images(reports):
@@ -89,9 +91,9 @@ def make_images(reports):
 
     # iowa hack
     while len(record['death_growth_rate']) != len(_get_dates()):
-      record['death_growth_rate'].append(0.000001)
+      record['death_growth_rate'].insert(0, 0.000001)
     while len(record['confirmed_growth_rate']) != len(_get_dates()):
-      record['confirmed_growth_rate'].append(0.000001)
+      record['confirmed_growth_rate'].insert(0, 0.000001)
 
     plt.plot(_plot_dates(),record['death_growth_rate'])
     plt.plot(_plot_dates(),record['confirmed_growth_rate'])
