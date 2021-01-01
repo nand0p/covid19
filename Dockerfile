@@ -6,9 +6,9 @@ ARG DATE
 ARG REVISION
 
 COPY . .
-WORKDIR /app
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
+WORKDIR /app
 RUN sed -i "s|SEDME|$REVISION -- $DATE|g" index.py
 RUN cat index.py
 RUN python make_state.py
