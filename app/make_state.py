@@ -48,20 +48,24 @@ def make_reports(dates):
             'deaths': record['deaths'],
             'confirmed': record['confirmed'],
             'deaths_diff': record['deaths_diff'],
-            'confirmed_diff': record['confirmed_diff']
-      })
+            'confirmed_diff': record['confirmed_diff'],
+            'fatality_rate': record['fatality_rate'],
+          })
 
   for state in states:
     state_deaths = []
-    death_growth_rate = []
     state_confirmed = []
+    state_fatality = []
+    death_growth_rate = []
     confirmed_growth_rate = []
+    fatality_growth_rate = []
     state_danger = False
 
     for report in reports:
       if state == report['state']:
         state_deaths.append(report['deaths'])
         state_confirmed.append(report['confirmed'])
+        state_fatality.append(report['fatality_rate'])
 
     for day in range(0, len(state_deaths)):
       if day == 0:
@@ -75,11 +79,19 @@ def make_reports(dates):
       else:
         confirmed_growth_rate.append(_get_rate(state_confirmed[0:day]))
 
+    for day in range(0, len(state_fatality)):
+      if day == 0:
+        fatality_growth_rate.append(0.01)
+      else:
+        fatality_growth_rate.append(_get_rate(state_fatality[0:day]))
+
     if death_growth_rate[-1] > death_growth_rate[-2] or \
-      confirmed_growth_rate[-1] > confirmed_growth_rate[-2]:
+      confirmed_growth_rate[-1] > confirmed_growth_rate[-2] or \
+      fatality_growth_rate[-1] > fatality_growth_rate[-2]:
       state_danger = True;
     elif death_growth_rate[-1] == death_growth_rate[-2] or \
-      confirmed_growth_rate[-1] == confirmed_growth_rate[-2]:
+      confirmed_growth_rate[-1] == confirmed_growth_rate[-2] or \
+      fatality_growth_rate[-1] == fatality_growth_rate[-2]:
       state_danger = random.choice([True, False])
 
     reports_parsed.append({
@@ -87,9 +99,11 @@ def make_reports(dates):
       'dates': dates,
       'deaths': state_deaths,
       'confirmed': state_confirmed,
+      'fatality': state_fatality,
       'confirmed_growth_rate': confirmed_growth_rate,
       'death_growth_rate': death_growth_rate,
-      'danger': state_danger
+      'fatality_growth_rate': fatality_growth_rate,
+      'danger': state_danger,
     })
 
   with open(reports_file, 'w') as fileout:
@@ -103,7 +117,7 @@ def _get_rate(rate_list):
   else:
     _rate = numpy.diff(rate_list) / rate_list[:-1] * 100
     #_rate = (numpy.exp(numpy.diff(numpy.log(rate_list)))[0] - 1) * 100
-  if _rate[-1] == 0:
+  if _rate[-1] < 0.01:
     return 0.01
   else:
     return round(_rate[-1], 2)
@@ -116,21 +130,24 @@ def get_raw_json(dates):
       response = requests.get(api_endpoint + 'reports', params=payload)
       print('processing ' + response.url)
       outjson.write(response.content)
-      time.sleep(1)
+      time.sleep(0.5)
 
 
 def make_images(reports, dates):
   for record in reports:
-    plt.clf()
 
     # iowa missing data hack
     while len(record['death_growth_rate']) != len(dates):
       record['death_growth_rate'].insert(0, 0.01)
     while len(record['confirmed_growth_rate']) != len(dates):
       record['confirmed_growth_rate'].insert(0, 0.01)
+    while len(record['fatality_growth_rate']) != len(dates):
+      record['fatality_growth_rate'].insert(0, 0.01)
 
+    plt.clf()
     plt.plot(_plot_dates(dates),record['death_growth_rate'])
     plt.plot(_plot_dates(dates),record['confirmed_growth_rate'])
+    plt.plot(_plot_dates(dates),record['fatality_growth_rate'])
     plt.ylabel('Growth Rates')
     plt.xlabel('Dates')
     plt.savefig(image_dir + record['state'] + '.' + get_dates_hash(dates_file) + '.png',

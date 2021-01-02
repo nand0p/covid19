@@ -68,19 +68,24 @@ states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 
 @app.route('/favicon.ico')
 def favicon():
     static_path = os.path.join(app.root_path, 'static')
-    return send_from_directory(static_path, 'favicon.ico', mimetype='image/xicon')
+    return send_from_directory(static_path,
+                               'favicon.ico',
+                               mimetype='image/xicon')
 
 
 @app.route('/')
 def home():
   reports = load_json(reports_file)
   dates = load_json(dates_file)
-  html = header + _get_scoreboard(reports)
+  html = header
+  html += _get_scoreboard(reports)
 
   for state in states:
     html += '<table border=30 width=100%>' + \
             _get_state_info_rows(state, dates, reports) + \
-            _get_growth_rate_rows(state, reports) + '</table>'
+            _get_growth_rate_rows(state, reports) + \
+            '</table>'
+
   html += footer
 
   return html
@@ -92,6 +97,8 @@ def _get_scoreboard(reports):
   deaths = []
   confirmed_growth_rates = []
   confirmed = []
+  fatality_growth_rates = []
+  fatality = []
 
   for state in states:
     for record in reports:
@@ -101,42 +108,65 @@ def _get_scoreboard(reports):
             danger.append(state)
         death_growth_rate = record['death_growth_rate'][-1]
         confirmed_growth_rate = record['confirmed_growth_rate'][-1]
-        death = record['deaths'][-1]
-        confirm = record['confirmed'][-1]
+        fatality_growth_rate = record['fatality_growth_rate'][-1]
         death_growth_rates.append([death_growth_rate, state])
         confirmed_growth_rates.append([confirmed_growth_rate, state])
+        fatality_growth_rates.append([fatality_growth_rate, state])
+        death = record['deaths'][-1]
+        confirm = record['confirmed'][-1]
+        fatal = record['fatality'][-1]
         deaths.append([death, state])
         confirmed.append([confirm, state])
+        fatality.append([fatal, state])
 
   danger.sort()
   deaths.sort()
   confirmed.sort()
+  fatality.sort()
   death_growth_rates.sort()
   confirmed_growth_rates.sort()
+  fatality_growth_rates.sort()
 
-  return '<p>Total US deaths: <font color=red><b>' + str(_calculate_totals(reports, 'deaths')) + '</b></font><p>' + \
-         'Total US confirmed infections: <font color=red><b>' + str(_calculate_totals(reports, 'confirmed')) + '</b></font><p>' + \
-         'There are <font color=red><b>' + str(len(danger)) + '</b></font>' + \
-         ' states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + str(danger) + \
-         '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + _calculate_top_ten(confirmed) + '</td>' + \
-         '<td>Top Deaths:<hr>' + _calculate_top_ten(deaths) + '</td>' + \
-         '<td>Top Infection Growth:<hr>' + _calculate_top_ten(confirmed_growth_rates) + '</td>' + \
-         '<td>Top Death Growth:<hr>' + _calculate_top_ten(death_growth_rates) + '</td></tr></table><p>'
+  return '<p>Total US deaths: <font color=red><b>' + \
+         str(_calculate_totals(reports, 'deaths')) + \
+         '</b></font><p>Total US confirmed infections: <font color=red><b>' + \
+         str(_calculate_totals(reports, 'confirmed')) + \
+         '</b></font><p>There are <font color=red><b>' + \
+         str(len(danger)) + \
+         '</b></font> states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + \
+         str(danger) + \
+         '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + \
+         _calculate_top_ten(confirmed) + \
+         '</td><td>Top Infection Growth:<hr>' + \
+         _calculate_top_ten(confirmed_growth_rates) + \
+         '</td><tr><tr><td>Top Deaths:<hr>' + \
+         _calculate_top_ten(deaths) + \
+         '</td><td>Top Death Growth:<hr>' + \
+         _calculate_top_ten(death_growth_rates) + \
+         '<p></td></tr><tr><td>Top Fatality Rate:<hr>' + \
+         _calculate_top_ten(fatality) + \
+         '</td><td>Top Fatality Rate Growth:<hr>' + \
+         _calculate_top_ten(fatality_growth_rates) + \
+         '</td></tr></table><p>'
 
 
 def _calculate_top_ten(report):
   top_ten = ''
+
   for count in range(9, -1, -1):
     count = count - 10
-    top_ten += str(report[count][0]).replace(' ', '_')  + '___' + \
+    top_ten += str(report[count][0]).replace(' ', '_') + '___' + \
                str(report[count][1]).replace(' ', '_') + '<br>'
+
   return top_ten
     
 
 def _calculate_totals(reports, report_type):
   total = 0
+
   for record in reports:
     total = total + record[report_type][-1]
+
   return total
 
 
@@ -146,17 +176,39 @@ def _get_state_info_rows(state, dates, reports):
     if state == record['state']:
       counter = 0
       for deaths in record['deaths']:
+
         if counter == 0:
-          html += '<tr><td><h1><center>' + state + '</center></h1></td><td>' + \
-                  str(dates[counter]) + '</td>' + '<td>deaths: ' + str(deaths) + \
-                  '<br>infections: ' + str(record['confirmed'][0]) + '</td>' + \
-                  '<td rowspan=6><img src=/static/images/' + urllib.parse.quote(state) + \
-                  '.' + get_dates_hash(dates_file) + '.png width=100%></td></tr>'
-        if counter == len(dates)-1 or counter == len(dates)-2 or counter == len(dates)-3:
-          html += '<tr><td>.</td><td>' + str(dates[counter]) + '</td>' + \
-                  '<td>deaths: ' + str(deaths) + '<br>infections: ' + \
-                  str(record['confirmed'][counter]) + '</td></tr>'
+          html += '<tr><td><h1><center>' + \
+                  state + \
+                  '</center></h1></td><td>' + \
+                  str(dates[counter]) + \
+                  '</td><td>deaths: ' + \
+                  str(deaths) + \
+                  '<br>infections: ' + \
+                  str(record['confirmed'][0]) + \
+                  '<br>fatality rate: ' + \
+                  str(record['fatality'][0]) + \
+                  '</td><td rowspan=6><img src=/static/images/' + \
+                  urllib.parse.quote(state) + \
+                  '.' + \
+                  get_dates_hash(dates_file) + \
+                  '.png width=100%></td></tr>'
+
+        if counter == len(dates) - 1 or \
+          counter == len(dates) - 2 or \
+          counter == len(dates) - 3:
+          html += '<tr><td>.</td><td>' + \
+                  str(dates[counter]) + \
+                  '</td><td>deaths: ' + \
+                  str(deaths) + \
+                  '<br>infections: ' + \
+                  str(record['confirmed'][counter]) + \
+                  '<br>fatality: ' + \
+                  str(record['fatality'][counter]) + \
+                  '</td></tr>'
+
         counter = counter + 1
+
   return html
 
 
@@ -166,21 +218,51 @@ def _get_growth_rate_rows(state, reports):
       return _get_growth_html('red' if record['danger'] else 'green',
                               record['deaths'],
                               record['death_growth_rate'],
+                              record['fatality'],
+                              record['fatality_growth_rate'],
                               record['confirmed'],
                               record['confirmed_growth_rate'])
 
 
-def _get_growth_html(color, deaths, death_growth_rate, confirmed, confirmed_growth_rate):
-  return '<tr><td bgcolor=' + color + '>last growth rates</td>' + \
-         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + '<br>last:' + str(deaths[-2]) + \
-         '<br>first:' + str(confirmed[0]) + '<br>last:' + str(confirmed[-2]) + '<br>len:' + str(len(confirmed)-1) + '</td>' + \
-         '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-2]) + '<p>infection: ' + str(confirmed_growth_rate[-2]) + '</td></tr>' + \
-         '<tr><td bgcolor=' + color + '>current growth rates</td>' + \
-         '<td bgcolor=' + color + '>first:' + str(deaths[0]) + '<br>last:' + str(deaths[-1]) + \
-         '<br>first:' + str(confirmed[0]) + '<br>last:' + str(confirmed[-1]) + '<br>len:' + str(len(confirmed)) + '</td>' + \
-         '<td bgcolor=' + color + '>death: ' + str(death_growth_rate[-1]) + '<p>infection: ' + str(confirmed_growth_rate[-1]) + '</td></tr><tr>'
+def _get_growth_html(color,
+                     deaths,
+                     death_growth_rate,
+                     confirmed,
+                     confirmed_growth_rate,
+                     fatality,
+                     fatality_growth_rate):
 
+
+  return '<tr><td align=center bgcolor=' + \
+         color + \
+         '>yesterday growth rates</td><td bgcolor=' + \
+         color + \
+         '><br>len:' + \
+         str(len(confirmed)-1) + \
+         '</td><td bgcolor=' + \
+         color + \
+         '>death growth rate: ' + \
+         str(death_growth_rate[-2]) + \
+         '<br>infection growth rate: ' + \
+         str(confirmed_growth_rate[-2]) + \
+         '<br>fatality growth rate: ' + \
+         str(fatality_growth_rate[-2]) + \
+         '</td></tr><tr><td align=center bgcolor=' + \
+         color + \
+         '>today growth rates</td><td bgcolor=' + \
+         color + \
+         '>len: ' + \
+         str(len(confirmed)) + \
+         '</td><td bgcolor=' + \
+         color + \
+         '>death growth rate: ' + \
+         str(death_growth_rate[-1]) + \
+         '<br>infection growth rate: ' + \
+         str(confirmed_growth_rate[-1]) + \
+         '<br>fatality growth rate: ' + \
+         str(fatality_growth_rate[-1]) + \
+         '</td></tr><tr>'
 
 
 if __name__ == '__main__':
-  app.run(debug=True,host='0.0.0.0')
+  app.run(debug=True, host='0.0.0.0')
