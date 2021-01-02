@@ -133,9 +133,10 @@ def _get_scoreboard(reports):
          str(_calculate_totals(reports, 'confirmed')) + \
          '</b></font><p>There are <font color=red><b>' + \
          str(len(danger)) + \
-         '</b></font> states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + \
+         '</b></font> states with an <font color=red><b>increasing</b>' + \
+         '</font> death or infection growth rate:<br><small>' + \
          str(danger) + \
-         '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + \
+         '</small><p><table cellpadding=30><tr><td>Top Infections:<hr>' + \
          _calculate_top_ten(confirmed, False) + \
          '</td><td>Top Infection Growth:<hr>' + \
          _calculate_top_ten(confirmed_growth_rates, True) + \
