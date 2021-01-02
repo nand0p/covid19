@@ -1,8 +1,7 @@
-from utils import get_dates_hash, spacer, load_json, dump_json, get_states, get_dates
+from utils import get_dates_hash, spacer, load_json, dump_json, get_states, get_dates, check_danger
 
 import matplotlib.pyplot as plt
 import requests
-import random
 import numpy
 import json
 import time
@@ -22,16 +21,10 @@ class Covid19:
     self.reports = []
     self.reports_parsed = []
 
-
-  def dump_dates(self):
     dump_json(self.dates_file, self.dates)
 
 
-  def dump_reports(self):
-    dump_json(self.reports_file, self.reports_parsed)
-
-
-  def make_reports(self):
+  def parse_json(self):
     for day in self.dates:
       raw_reports = load_json(self.reports_dir + day + '_reports.json')
       for records in raw_reports.values():
@@ -47,7 +40,17 @@ class Covid19:
             })
 
 
-  def parse_reports(self):
+  def _get_rates(self, report, growth_rates):
+    for day in range(0, len(report)):
+      if day == 0:
+        growth_rates.append(0.01)
+      else:
+        growth_rates.append(self._get_rate(report[0:day]))
+
+    return growth_rates
+
+
+  def make_reports(self):
     for state in self.states:
       state_deaths = []
       state_confirmed = []
@@ -63,35 +66,13 @@ class Covid19:
           state_confirmed.append(report['confirmed'])
           state_fatality.append(report['fatality_rate'])
 
-      for day in range(0, len(state_deaths)):
-        if day == 0:
-          death_growth_rates.append(0.01)
-        else:
-          death_growth_rates.append(self._get_rate(state_deaths[0:day]))
+      death_growth_rates = self._get_rates(state_deaths, death_growth_rates)
+      confirmed_growth_rates = self._get_rates(state_confirmed, confirmed_growth_rates)
+      fatality_growth_rates = self._get_rates(state_fatality, fatality_growth_rates)
 
-      for day in range(0, len(state_confirmed)):
-        if day == 0:
-          confirmed_growth_rates.append(0.01)
-        else:
-          confirmed_growth_rates.append(self._get_rate(state_confirmed[0:day]))
-
-      for day in range(0, len(state_fatality)):
-        if day == 0:
-          fatality_growth_rates.append(0.01)
-        else:
-          fatality_growth_rates.append(self._get_rate(state_fatality[0:day]))
-
-      if len(death_growth_rates) > 1 and \
-        len(confirmed_growth_rates) > 1 and \
-        len(fatality_growth_rates) > 1:
-        if death_growth_rates[-1] > death_growth_rates[-2] or \
-          confirmed_growth_rates[-1] > confirmed_growth_rates[-2] or \
-          fatality_growth_rates[-1] > fatality_growth_rates[-2]:
-          state_danger = True;
-        elif death_growth_rates[-1] == death_growth_rates[-2] or \
-          confirmed_growth_rates[-1] == confirmed_growth_rates[-2] or \
-          fatality_growth_rates[-1] == fatality_growth_rates[-2]:
-          state_danger = random.choice([True, False])
+      state_danger = check_danger(death_growth_rates,
+                                  confirmed_growth_rates,
+                                  fatality_growth_rates)
 
       self.reports_parsed.append({
         'state': state,
@@ -104,6 +85,8 @@ class Covid19:
         'fatality_growth_rates': fatality_growth_rates,
         'danger': state_danger,
       })
+
+      dump_json(self.reports_file, self.reports_parsed)
 
 
   def _get_rate(self, rate_list):
@@ -119,12 +102,7 @@ class Covid19:
 
   def get_raw_json(self):
     for day in self.dates:
-      with open(self.reports_dir + \
-                day + \
-                '_' + \
-                self.reports_file, \
-                'wb') as outjson:
-
+      with open(self.reports_dir + day + '_' + self.reports_file, 'wb') as outjson:
         payload = {'date': day, 'iso': 'USA'}
         response = requests.get(self.api_endpoint + 'reports', params=payload)
         print('processing ' + response.url)
@@ -168,10 +146,8 @@ class Covid19:
 def main():
   covid = Covid19()
   covid.get_raw_json()
-  covid.dump_dates()
+  covid.parse_json()
   covid.make_reports()
-  covid.parse_reports()
-  covid.dump_reports()
   covid.make_images()
 
 

@@ -1,7 +1,7 @@
-from html_helper import get_header, get_footer
-from flask import Flask, send_from_directory
 from utils import load_json, get_dates_hash, get_states
+from html_helper import get_header, get_footer
 from flask_classful import FlaskView
+from flask import Flask
 
 import urllib.parse
 import requests
@@ -84,9 +84,8 @@ class Covid19(FlaskView):
            '</b></font><p>There are <font color=red><b>' + \
            str(len(self.danger)) + \
            '</b></font> states with an <font color=red><b>increasing</b>' + \
-           '</font> death or infection growth rate:<br><small>' + \
-           str(self.danger) + \
-           '</small><p><table cellpadding=30><tr><td><big>Top Infections:<hr>' + \
+           '</font> growth rates.<p><table cellpadding=30>' \ +
+           '<tr><td><big>Top Infections:<hr>' + \
            self._calculate_top_ten(self.confirmed, False) + \
            '</td><td><big>Top Infection Growth:<hr>' + \
            self._calculate_top_ten(self.confirmed_growth, True) + \
