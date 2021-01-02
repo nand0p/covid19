@@ -1,5 +1,8 @@
+from html_helper import get_header, get_footer
 from flask import Flask, send_from_directory
-from utils import load_json, get_dates_hash
+from utils import load_json, get_dates_hash, get_states
+from flask_classful import FlaskView
+
 import urllib.parse
 import requests
 import json
@@ -7,264 +10,199 @@ import os
 
 
 app = Flask(__name__, static_url_path='/static')
-api_endpoint = 'https://covid-api.com/api'
-dates_file = 'dates.json'
-reports_file = 'reports.json'
-reports_dir = 'reports/'
-
-header = '<html><link rel="icon" type="image/x-icon" href="favicon.ico" /><head><title>Covid-19 US Statistics</title>' + \
-         '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />' + \
-         '<meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Expires" content="0" />' + \
-         '<!-- Global site tag (gtag.js) - Google Analytics -->' + \
-         '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-32710227-2"></script>' + \
-         '<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}' + \
-         'gtag("js", new Date()); gtag("config", "UA-32710227-2"); </script>' + \
-         '<script data-ad-client="ca-pub-9792012528290289" async ' + \
-         'src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>' + \
-         '</head><body><h1>Covid-19 US Statistics</h1><p>'
-
-footer = '<center><p><br><p><b>Data Source:</b><br>COVID-19 Data Repository by the Center for Systems Science ' + \
-         'and Engineering (CSSE) at Johns Hopkins University' + \
-         '<p><br><p><b>Covid-19 Resources:</b><br>' + \
-         '<a href=https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/checklist-household-ready.html>' + \
-         'https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/checklist-household-ready.html</a><br>' + \
-         '<a href=https://www.epa.gov/pesticide-registration/list-n-disinfectants-use-against-sars-cov-2>' + \
-         'https://www.epa.gov/pesticide-registration/list-n-disinfectants-use-against-sars-cov-2</a><br>' + \
-         '<a href=https://arstechnica.com/science/2020/04/dont-panic-the-comprehensive-ars-technica-guide-to-the-coronavirus>' + \
-         'https://arstechnica.com/science/2020/04/dont-panic-the-comprehensive-ars-technica-guide-to-the-coronavirus</a><br>' + \
-         '<a href=https://www.seriouseats.com/2020/03/food-safety-and-coronavirus-a-comprehensive-guide.html>' + \
-         'https://www.seriouseats.com/2020/03/food-safety-and-coronavirus-a-comprehensive-guide.html</a><br>' + \
-         '<a href=https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html>' + \
-         'https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html</a><br>' + \
-         '<a href=https://gothamist.com/news/coronavirus-statistics-tracking-epidemic-new-york>' + \
-         'https://gothamist.com/news/coronavirus-statistics-tracking-epidemic-new-york</a><br>' + \
-         '<a href=https://www.worldometers.info/coronavirus>' + \
-         'https://www.worldometers.info/coronavirus</a><br>' + \
-         '<a href=https://ourworldindata.org/coronavirus>' + \
-         'https://ourworldindata.org/coronavirus</a><br>' + \
-         '<a href=https://www.statnews.com/tag/coronavirus>' + \
-         'https://www.statnews.com/tag/coronavirus</a><br>' + \
-         '<a href=https://www.cdc.gov/coronavirus/2019-ncov/covid-data/covidview/index.html>' + \
-         'https://www.cdc.gov/coronavirus/2019-ncov/covid-data/covidview/index.html</a><br>' + \
-         '<a href=https://www.who.int/emergencies/diseases/novel-coronavirus-2019/events-as-they-happen>' + \
-         'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/events-as-they-happen</a><br>' + \
-         '<a href=https://www.theatlantic.com/health/archive/2020/06/covid-19-coronavirus-longterm-symptoms-months/612679>' + \
-         'https://www.theatlantic.com/health/archive/2020/06/covid-19-coronavirus-longterm-symptoms-months/612679</a><br>' + \
-         '<a href=https://covid19.healthdata.org/united-states-of-america>' + \
-         'https://covid19.healthdata.org/united-states-of-america</a><br>' + \
-         '<a href=https://rt.live>https://rt.live</a><br>' + \
-         '<a href=https://covidusa.net>https://covidusa.net</a><br>' + \
-         '<a href=https://en.wikipedia.org/wiki/Coronavirus_disease_2019>' + \
-         'https://en.wikipedia.org/wiki/Coronavirus_disease_2019</a><br>' + \
-         '<p><br><p>SEDME -- Hex7 Internet Solutions<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a>' + \
-         '<p><br><p>If you find this useful, please contribute:<br><b>' + \
-         'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
-         'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A' + \
-         '<p><br><p><b>&copy;2020 <a href=http://hex7.com>Hex7 Internet Solutions</a>'
-
-states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
 
 
-@app.route('/favicon.ico')
-def favicon():
-    static_path = os.path.join(app.root_path, 'static')
-    return send_from_directory(static_path,
-                               'favicon.ico',
-                               mimetype='image/xicon')
+class Covid19(FlaskView):
+
+  def __init__(self):
+    self.states = get_states()
+    self.dates_file = 'dates.json'
+    self.reports_file = 'reports.json'
+    self.reports = load_json(self.reports_file)
+    self.dates = load_json(self.dates_file)
+    self.danger = []
+    self.deaths = []
+    self.confirmed = []
+    self.fatality = []
+    self.deaths_growth = []
+    self.confirmed_growth = []
+    self.fatality_growth = []
+    self.scoreboard_items = 10
 
 
-@app.route('/')
-def home():
-  reports = load_json(reports_file)
-  dates = load_json(dates_file)
-  html = header
-  html += _get_scoreboard(reports)
+  def index(self):
+    html = get_header()
+    html += self._get_scoreboard()
 
-  for state in states:
-    html += '<table border=30 width=100%>' + \
-            _get_state_info_rows(state, dates, reports) + \
-            _get_growth_rate_rows(state, reports) + \
-            '</table>'
+    for state in self.states:
+      html += '<table border=30 width=100%>' + \
+              self._get_state_info_rows(state) + \
+              self._get_growth_rate_rows(state) + \
+              '</table>'
 
-  html += footer
+    html += get_footer()
 
-  return html
+    return html
 
 
-def _get_scoreboard(reports):
-  danger = []
-  death_growth_rates = []
-  deaths = []
-  confirmed_growth_rates = []
-  confirmed = []
-  fatality_growth_rates = []
-  fatality = []
+  def _get_scoreboard(self):
+    self.danger = []
+    self.deaths = []
+    self.confirmed = []
+    self.fatality = []
+    self.deaths_growth = []
+    self.confirmed_growth = []
+    self.fatality_growth = []
 
-  for state in states:
-    for record in reports:
+    for state in self.states:
+      for record in self.reports:
+        if state == record['state']:
+          if record['danger'] == True:
+            if state not in self.danger:
+              self.danger.append(state)
+
+          self.deaths.append([ record['deaths'][-1], state ])
+          self.deaths_growth.append([ record['death_growth_rates'][-1], state ])
+          self.confirmed.append([ record['confirmed'][-1], state ])
+          self.confirmed_growth.append([ record['confirmed_growth_rates'][-1], state ])
+          self.fatality.append([ record['fatality'][-1], state ])
+          self.fatality_growth.append([ record['fatality_growth_rates'][-1], state ])
+
+    self.danger.sort()
+    self.deaths.sort()
+    self.confirmed.sort()
+    self.fatality.sort()
+    self.deaths_growth.sort()
+    self.confirmed_growth.sort()
+    self.fatality_growth.sort()
+
+    # jinjafy this
+    return '<p>Total US deaths: <font color=red><b>' + \
+           str(self._calculate_totals('deaths')) + \
+           '</b></font><p>Total US confirmed infections: <font color=red><b>' + \
+           str(self._calculate_totals('confirmed')) + \
+           '</b></font><p>There are <font color=red><b>' + \
+           str(len(self.danger)) + \
+           '</b></font> states with an <font color=red><b>increasing</b>' + \
+           '</font> death or infection growth rate:<br><small>' + \
+           str(self.danger) + \
+           '</small><p><table cellpadding=30><tr><td><big>Top Infections:<hr>' + \
+           self._calculate_top_ten(self.confirmed, False) + \
+           '</td><td><big>Top Infection Growth:<hr>' + \
+           self._calculate_top_ten(self.confirmed_growth, True) + \
+           '</td></tr><tr><td><big>Top Deaths:<hr>' + \
+           self._calculate_top_ten(self.deaths, False) + \
+           '</td><td><big>Top Death Growth:<hr>' + \
+           self._calculate_top_ten(self.deaths_growth, True) + \
+           '</td></tr><tr><td><big>Top Fatality Rate:<hr>' + \
+           self._calculate_top_ten(self.fatality, False) + \
+           '</td><td><big>Top Fatality Rate Growth:<hr>' + \
+           self._calculate_top_ten(self.fatality_growth, True) + \
+           '</td></tr></table><p>'
+
+
+  def _calculate_top_ten(self, report, growth):
+    top_ten = ''
+
+    for count in range(self.scoreboard_items -1, -1, -1):
+      count = count - self.scoreboard_items
+      rate = str(report[count][0])
+      state = report[count][1].replace(' ', '_')
+      top_ten += rate + '&#37;___' + state + '<br>' if growth else \
+                 rate + '___' + state + '<br>'
+
+    return top_ten
+
+
+  def _calculate_totals(self, report_type):
+    total = 0
+
+    for record in self.reports:
+      total = total + record[report_type][-1]
+
+    return total
+
+
+  def _get_state_info_rows(self, state):
+    html = ''
+    for record in self.reports:
       if state == record['state']:
-        if record['danger'] == True:
-          if state not in danger:
-            danger.append(state)
-        death_growth_rate = record['death_growth_rate'][-1]
-        confirmed_growth_rate = record['confirmed_growth_rate'][-1]
-        fatality_growth_rate = record['fatality_growth_rate'][-1]
-        death_growth_rates.append([death_growth_rate, state])
-        confirmed_growth_rates.append([confirmed_growth_rate, state])
-        fatality_growth_rates.append([fatality_growth_rate, state])
-        death = record['deaths'][-1]
-        confirm = record['confirmed'][-1]
-        fatal = record['fatality'][-1]
-        deaths.append([death, state])
-        confirmed.append([confirm, state])
-        fatality.append([fatal, state])
+        counter = 0
+        for deaths in record['deaths']:
 
-  danger.sort()
-  deaths.sort()
-  confirmed.sort()
-  fatality.sort()
-  death_growth_rates.sort()
-  confirmed_growth_rates.sort()
-  fatality_growth_rates.sort()
+          if counter == 0:
+            html += '<tr><td><h1><center>' + \
+                    state + \
+                    '</center></h1></td><td>' + \
+                    str(self.dates[counter]) + \
+                    '</td><td>death: ' + \
+                    str(deaths) + \
+                    '<br>infection: ' + \
+                    str(record['confirmed'][0]) + \
+                    '<br>fatality: ' + \
+                    str(record['fatality'][0]) + \
+                    '</td><td rowspan=6><img src=/static/images/' + \
+                    urllib.parse.quote(state) + \
+                    '.' + \
+                    get_dates_hash(self.dates_file) + \
+                    '.png width=100%></td></tr>'
 
-  return '<p>Total US deaths: <font color=red><b>' + \
-         str(_calculate_totals(reports, 'deaths')) + \
-         '</b></font><p>Total US confirmed infections: <font color=red><b>' + \
-         str(_calculate_totals(reports, 'confirmed')) + \
-         '</b></font><p>There are <font color=red><b>' + \
-         str(len(danger)) + \
-         '</b></font> states with an <font color=red><b>increasing</b>' + \
-         '</font> death or infection growth rate:<br><small>' + \
-         str(danger) + \
-         '</small><p><table cellpadding=30><tr><td><big>Top Infections:<hr>' + \
-         _calculate_top_ten(confirmed, False) + \
-         '</td><td><big>Top Infection Growth:<hr>' + \
-         _calculate_top_ten(confirmed_growth_rates, True) + \
-         '</td><tr><tr><td><big>Top Deaths:<hr>' + \
-         _calculate_top_ten(deaths, False) + \
-         '</td><td><big>Top Death Growth:<hr>' + \
-         _calculate_top_ten(death_growth_rates, True) + \
-         '<p></td></tr><tr><td><big>Top Fatality Rate:<hr>' + \
-         _calculate_top_ten(fatality, False) + \
-         '</td><td><big>Top Fatality Rate Growth:<hr>' + \
-         _calculate_top_ten(fatality_growth_rates, True) + \
-         '</td></tr></table><p>'
+          if counter == len(self.dates) - 1 or \
+            counter == len(self.dates) - 2 or \
+            counter == len(self.dates) - 3:
+            html += '<tr><td>.</td><td>' + \
+                    str(self.dates[counter]) + \
+                    '</td><td>death: ' + \
+                    str(deaths) + \
+                    '<br>infection: ' + \
+                    str(record['confirmed'][counter]) + \
+                    '<br>fatality: ' + \
+                    str(record['fatality'][counter]) + \
+                    '</td></tr>'
+
+          counter = counter + 1
+
+    return html
 
 
-def _calculate_top_ten(report, percent):
-  top_ten = ''
+  def _get_growth_rate_rows(self, state):
+    for record in self.reports:
+      if state == record['state']:
+        color = 'red' if record['danger'] else 'green'
 
-  for count in range(9, -1, -1):
-    count = count - 10
-    rate = str(report[count][0]).replace(' ', '_')
-    state = str(report[count][1]).replace(' ', '_')
-    top_ten += rate + '&#37;___' + state + '<br>' if percent else \
-               rate + '___' + state + '<br>'
-
-  return top_ten
-    
-
-def _calculate_totals(reports, report_type):
-  total = 0
-
-  for record in reports:
-    total = total + record[report_type][-1]
-
-  return total
-
-
-def _get_state_info_rows(state, dates, reports):
-  html = ''
-  for record in reports:
-    if state == record['state']:
-      counter = 0
-      for deaths in record['deaths']:
-
-        if counter == 0:
-          html += '<tr><td><h1><center>' + \
-                  state + \
-                  '</center></h1></td><td>' + \
-                  str(dates[counter]) + \
-                  '</td><td>death: ' + \
-                  str(deaths) + \
-                  '<br>infection: ' + \
-                  str(record['confirmed'][0]) + \
-                  '<br>fatality: ' + \
-                  str(record['fatality'][0]) + \
-                  '</td><td rowspan=6><img src=/static/images/' + \
-                  urllib.parse.quote(state) + \
-                  '.' + \
-                  get_dates_hash(dates_file) + \
-                  '.png width=100%></td></tr>'
-
-        if counter == len(dates) - 1 or \
-          counter == len(dates) - 2 or \
-          counter == len(dates) - 3:
-          html += '<tr><td>.</td><td>' + \
-                  str(dates[counter]) + \
-                  '</td><td>death: ' + \
-                  str(deaths) + \
-                  '<br>infection: ' + \
-                  str(record['confirmed'][counter]) + \
-                  '<br>fatality: ' + \
-                  str(record['fatality'][counter]) + \
-                  '</td></tr>'
-
-        counter = counter + 1
-
-  return html
+        # jinjafy this
+        return '<tr><td align=center bgcolor=' + \
+               color + \
+               '>last growth rates</td><td bgcolor=' + \
+               color + \
+               '><br>len:' + \
+               str(len(self.dates) - 1) + \
+               '</td><td bgcolor=' + \
+               color + \
+               '>death: ' + \
+               str(record['death_growth_rates'][-2]) + \
+               '&#37;<br>infection: ' + \
+               str(record['confirmed_growth_rates'][-2]) + \
+               '&#37;<br>fatality: ' + \
+               str(record['fatality_growth_rates'][-2]) + \
+               '&#37;</td></tr><tr><td align=center bgcolor=' + \
+               color + \
+               '>current growth rates</td><td bgcolor=' + \
+               color + \
+               '>len:' + \
+               str(len(self.dates)) + \
+               '</td><td bgcolor=' + \
+               color + \
+               '>death: ' + \
+               str(record['death_growth_rates'][-1]) + \
+               '&#37;<br>infection: ' + \
+               str(record['confirmed_growth_rates'][-1]) + \
+               '&#37;<br>fatality: ' + \
+               str(record['fatality_growth_rates'][-1]) + \
+               '&#37;</td></tr>'
 
 
-def _get_growth_rate_rows(state, reports):
-  for record in reports:
-    if state == record['state']:
-      return _get_growth_html('red' if record['danger'] else 'green',
-                              record['deaths'],
-                              record['death_growth_rate'],
-                              record['fatality'],
-                              record['fatality_growth_rate'],
-                              record['confirmed'],
-                              record['confirmed_growth_rate'])
-
-
-def _get_growth_html(color,
-                     deaths,
-                     death_growth_rate,
-                     confirmed,
-                     confirmed_growth_rate,
-                     fatality,
-                     fatality_growth_rate):
-
-
-  return '<tr><td align=center bgcolor=' + \
-         color + \
-         '>yesterday growth rates</td><td bgcolor=' + \
-         color + \
-         '><br>len:' + \
-         str(len(confirmed)-1) + \
-         '</td><td bgcolor=' + \
-         color + \
-         '>death: ' + \
-         str(death_growth_rate[-2]) + \
-         '&#37;<br>infection: ' + \
-         str(confirmed_growth_rate[-2]) + \
-         '&#37;<br>fatality: ' + \
-         str(fatality_growth_rate[-2]) + \
-         '&#37;</td></tr><tr><td align=center bgcolor=' + \
-         color + \
-         '>today growth rates</td><td bgcolor=' + \
-         color + \
-         '>len:' + \
-         str(len(confirmed)) + \
-         '</td><td bgcolor=' + \
-         color + \
-         '>death: ' + \
-         str(death_growth_rate[-1]) + \
-         '&#37;<br>infection: ' + \
-         str(confirmed_growth_rate[-1]) + \
-         '&#37;<br>fatality: ' + \
-         str(fatality_growth_rate[-1]) + \
-         '&#37;</td></tr><tr>'
+Covid19.register(app, route_base='/')
 
 
 if __name__ == '__main__':
