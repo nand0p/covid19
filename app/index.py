@@ -136,17 +136,17 @@ def _get_scoreboard(reports):
          '</b></font> states with an <font color=red><b>increasing</b>' + \
          '</font> death or infection growth rate:<br><small>' + \
          str(danger) + \
-         '</small><p><table cellpadding=30><tr><td>Top Infections:<hr>' + \
+         '</small><p><table cellpadding=30><tr><td><big>Top Infections:<hr>' + \
          _calculate_top_ten(confirmed, False) + \
-         '</td><td>Top Infection Growth:<hr>' + \
+         '</td><td><big>Top Infection Growth:<hr>' + \
          _calculate_top_ten(confirmed_growth_rates, True) + \
-         '</td><tr><tr><td>Top Deaths:<hr>' + \
+         '</td><tr><tr><td><big>Top Deaths:<hr>' + \
          _calculate_top_ten(deaths, False) + \
-         '</td><td>Top Death Growth:<hr>' + \
+         '</td><td><big>Top Death Growth:<hr>' + \
          _calculate_top_ten(death_growth_rates, True) + \
-         '<p></td></tr><tr><td>Top Fatality Rate:<hr>' + \
+         '<p></td></tr><tr><td><big>Top Fatality Rate:<hr>' + \
          _calculate_top_ten(fatality, False) + \
-         '</td><td>Top Fatality Rate Growth:<hr>' + \
+         '</td><td><big>Top Fatality Rate Growth:<hr>' + \
          _calculate_top_ten(fatality_growth_rates, True) + \
          '</td></tr></table><p>'
 
