@@ -130,7 +130,7 @@ def get_raw_json(dates):
       response = requests.get(api_endpoint + 'reports', params=payload)
       print('processing ' + response.url)
       outjson.write(response.content)
-      time.sleep(0.5)
+      time.sleep(0.1)
 
 
 def make_images(reports, dates):

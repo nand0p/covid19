@@ -136,27 +136,29 @@ def _get_scoreboard(reports):
          '</b></font> states with an <font color=red><b>increasing</b></font> death or infection growth rate: ' + \
          str(danger) + \
          '<p><table cellpadding=30><tr><td>Top Infections:<hr>' + \
-         _calculate_top_ten(confirmed) + \
+         _calculate_top_ten(confirmed, False) + \
          '</td><td>Top Infection Growth:<hr>' + \
-         _calculate_top_ten(confirmed_growth_rates) + \
+         _calculate_top_ten(confirmed_growth_rates, True) + \
          '</td><tr><tr><td>Top Deaths:<hr>' + \
-         _calculate_top_ten(deaths) + \
+         _calculate_top_ten(deaths, False) + \
          '</td><td>Top Death Growth:<hr>' + \
-         _calculate_top_ten(death_growth_rates) + \
+         _calculate_top_ten(death_growth_rates, True) + \
          '<p></td></tr><tr><td>Top Fatality Rate:<hr>' + \
-         _calculate_top_ten(fatality) + \
+         _calculate_top_ten(fatality, False) + \
          '</td><td>Top Fatality Rate Growth:<hr>' + \
-         _calculate_top_ten(fatality_growth_rates) + \
+         _calculate_top_ten(fatality_growth_rates, True) + \
          '</td></tr></table><p>'
 
 
-def _calculate_top_ten(report):
+def _calculate_top_ten(report, percent):
   top_ten = ''
 
   for count in range(9, -1, -1):
     count = count - 10
-    top_ten += str(report[count][0]).replace(' ', '_') + '___' + \
-               str(report[count][1]).replace(' ', '_') + '<br>'
+    rate = str(report[count][0]).replace(' ', '_')
+    state = str(report[count][1]).replace(' ', '_')
+    top_ten += rate + '&#37;___' + state + '<br>' if percent else \
+               rate + '___' + state + '<br>'
 
   return top_ten
     
@@ -251,7 +253,7 @@ def _get_growth_html(color,
          color + \
          '>today growth rates</td><td bgcolor=' + \
          color + \
-         '>len: ' + \
+         '>len:' + \
          str(len(confirmed)) + \
          '</td><td bgcolor=' + \
          color + \
