@@ -185,11 +185,11 @@ def _get_state_info_rows(state, dates, reports):
                   state + \
                   '</center></h1></td><td>' + \
                   str(dates[counter]) + \
-                  '</td><td>deaths: ' + \
+                  '</td><td>death: ' + \
                   str(deaths) + \
-                  '<br>infections: ' + \
+                  '<br>infection: ' + \
                   str(record['confirmed'][0]) + \
-                  '<br>fatality rate: ' + \
+                  '<br>fatality: ' + \
                   str(record['fatality'][0]) + \
                   '</td><td rowspan=6><img src=/static/images/' + \
                   urllib.parse.quote(state) + \
@@ -202,9 +202,9 @@ def _get_state_info_rows(state, dates, reports):
           counter == len(dates) - 3:
           html += '<tr><td>.</td><td>' + \
                   str(dates[counter]) + \
-                  '</td><td>deaths: ' + \
+                  '</td><td>death: ' + \
                   str(deaths) + \
-                  '<br>infections: ' + \
+                  '<br>infection: ' + \
                   str(record['confirmed'][counter]) + \
                   '<br>fatality: ' + \
                   str(record['fatality'][counter]) + \
@@ -244,13 +244,13 @@ def _get_growth_html(color,
          str(len(confirmed)-1) + \
          '</td><td bgcolor=' + \
          color + \
-         '>death growth rate: ' + \
+         '>death: ' + \
          str(death_growth_rate[-2]) + \
-         '<br>infection growth rate: ' + \
+         '&#37;<br>infection: ' + \
          str(confirmed_growth_rate[-2]) + \
-         '<br>fatality growth rate: ' + \
+         '&#37;<br>fatality: ' + \
          str(fatality_growth_rate[-2]) + \
-         '</td></tr><tr><td align=center bgcolor=' + \
+         '&#37;</td></tr><tr><td align=center bgcolor=' + \
          color + \
          '>today growth rates</td><td bgcolor=' + \
          color + \
@@ -258,13 +258,13 @@ def _get_growth_html(color,
          str(len(confirmed)) + \
          '</td><td bgcolor=' + \
          color + \
-         '>death growth rate: ' + \
+         '>death: ' + \
          str(death_growth_rate[-1]) + \
-         '<br>infection growth rate: ' + \
+         '&#37;<br>infection: ' + \
          str(confirmed_growth_rate[-1]) + \
-         '<br>fatality growth rate: ' + \
+         '&#37;<br>fatality: ' + \
          str(fatality_growth_rate[-1]) + \
-         '</td></tr><tr>'
+         '&#37;</td></tr><tr>'
 
 
 if __name__ == '__main__':
