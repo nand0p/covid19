@@ -83,8 +83,8 @@ class Covid19(FlaskView):
            str(self._calculate_totals('confirmed')) + \
            '</b></font><p>There are <font color=red><b>' + \
            str(len(self.danger)) + \
-           '</b></font> states with an <font color=red><b>increasing</b>' + \
-           '</font> growth rates.<p><table cellpadding=30>' \ +
+           '</b></font> states with <font color=red><b>increasing</b>' + \
+           '</font> growth rates.<p><table cellpadding=30>' + \
            '<tr><td><big>Top Infections:<hr>' + \
            self._calculate_top_ten(self.confirmed, False) + \
            '</td><td><big>Top Infection Growth:<hr>' + \

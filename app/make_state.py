@@ -116,13 +116,13 @@ class Covid19:
       # iowa missing data hack
       while len(record['death_growth_rates']) != len(self.dates):
         record['death_growth_rates'].insert(0, 0.01)
-        #print('fluffing array make_images death', record['death_growth_rates'])
+        print('fluffing make_images death', record['state'], record['death_growth_rates'])
       while len(record['confirmed_growth_rates']) != len(self.dates):
         record['confirmed_growth_rates'].insert(0, 0.01)
-        #print('fluffing array make_images infection', record['confirmed_growth_rates'])
+        print('fluffing make_images infection', record['state'], record['confirmed_growth_rates'])
       while len(record['fatality_growth_rates']) != len(self.dates):
         record['fatality_growth_rates'].insert(0, 0.01)
-        #print('fluffing array make_images fatality', record['fatality_growth_rates'])
+        print('fluffing make_images fatality', record['state'], record['fatality_growth_rates'])
 
       plt.clf()
       plt.plot(self._plot_dates(),record['death_growth_rates'])
