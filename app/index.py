@@ -85,17 +85,17 @@ class Covid19(FlaskView):
            str(len(self.danger)) + \
            '</b></font> states with <font color=red><b>increasing</b>' + \
            '</font> growth rates.<p><table cellpadding=30>' + \
-           '<tr><td><big>Top Infections:<hr>' + \
+           '<tr><td>Top Infections:<hr>' + \
            self._calculate_top_ten(self.confirmed, False) + \
-           '</td><td><big>Top Infection Growth:<hr>' + \
+           '</td><td>Top Infection Growth:<hr>' + \
            self._calculate_top_ten(self.confirmed_growth, True) + \
-           '</td></tr><tr><td><big>Top Deaths:<hr>' + \
+           '</td></tr><tr><td>Top Deaths:<hr>' + \
            self._calculate_top_ten(self.deaths, False) + \
-           '</td><td><big>Top Death Growth:<hr>' + \
+           '</td><td>Top Death Growth:<hr>' + \
            self._calculate_top_ten(self.deaths_growth, True) + \
-           '</td></tr><tr><td><big>Top Fatality Rate:<hr>' + \
+           '</td></tr><tr><td>Top Fatality Rate:<hr>' + \
            self._calculate_top_ten(self.fatality, False) + \
-           '</td><td><big>Top Fatality Rate Growth:<hr>' + \
+           '</td><td>Top Fatality Rate Growth:<hr>' + \
            self._calculate_top_ten(self.fatality_growth, True) + \
            '</td></tr></table><p>'
 
