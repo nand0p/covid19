@@ -107,7 +107,7 @@ class Covid19:
         response = requests.get(self.api_endpoint + 'reports', params=payload)
         print('processing ' + response.url)
         outjson.write(response.content)
-        time.sleep(0.1)
+        time.sleep(1)
 
 
   def make_images(self):
