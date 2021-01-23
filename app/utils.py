@@ -54,8 +54,7 @@ def spacer(chars):
 
 def get_dates(first_date):
   yesterday = datetime.today() - timedelta(days = 1)
-  dates = pandas.date_range(start=first_date,end=yesterday).strftime(date_format='%Y-%m-%d').to_list()
-  return dates[:-1]
+  return pandas.date_range(start=first_date,end=yesterday).strftime(date_format='%Y-%m-%d').to_list()
 
 
 def get_states():
