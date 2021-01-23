@@ -101,6 +101,7 @@ class Covid19:
 
 
   def get_raw_json(self):
+    print(self.dates)
     for day in self.dates:
       with open(self.reports_dir + day + '_' + self.reports_file, 'wb') as outjson:
         payload = {'date': day, 'iso': 'USA'}
