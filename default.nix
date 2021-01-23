@@ -1,5 +1,4 @@
 with import <nixpkgs> {};
-#with pkgs.python38Packages;
 
 stdenv.mkDerivation {
   name = "covid19";
