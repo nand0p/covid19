@@ -1,3 +1,5 @@
+![CICD](https://github.com/actions/covid19/workflows/CICD/badge.svg)
+
 # Covid 19 growth rate visualization with python flask.
 
 
