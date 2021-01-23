@@ -5,29 +5,28 @@ on:
     branches: [ master ]
     workflow_dispatch:
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: check out repo
-          uses: actions/checkout@v2
+    steps:
+      - name: check out repo
+        uses: actions/checkout@v2
 
-        - name: login dockerhub
-          uses: docker/login-action@v1
-          with:
-            username: nand0p
-            password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: login dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: nand0p
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-        - name: build and push
-          id: docker_build
-          uses: docker/build-push-action@v2
-          with:
-            context: ./
-            file: ./Dockerfile
-            push: true
-            tags: nand0p/covid19:latest
+      - name: build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: nand0p/covid19:latest
 
-        - name: echo digest
-          run: echo ${{ steps.docker_build.outputs.digest }}
-
+      - name: echo digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
