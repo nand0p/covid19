@@ -47,6 +47,8 @@ def get_footer():
          'https://en.wikipedia.org/wiki/Coronavirus_disease_2019</a><br>' + \
          '<p><br><p>SEDME -- Hex7 Internet Solutions<br><a href=https://github.com/nand0p/covid19>https://github.com/nand0p/covid19</a>' + \
          '<p><br><p>If you find this useful, please contribute:<br><b>' + \
-         'BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB<br>' + \
-         'ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A' + \
+         'BTC: 3Egg2GsyYievwEiiyUkLN2DaokZ27XUS9Y<br>' + \
+         'ETH: 0x71a54911Ad33A8D43950E9999F27D8fCe956f7cf<br>' + \
+         'DOGE: D6NEgAuTYcaeddCGQqFDMWTNRaGMcYreG5<br>' + \
+         'XMR: 839uwCZuZp8ESNdZ5YtCujcQw7WEhcBvPMUaBRV5pqdoP8LxgyLtx27KYxEMMAWQog4suatDGAVerRRLMNB3QZNXTqrBbPL<br>' + \
          '<p><br><p><b>&copy;2020 <a href=http://hex7.com>Hex7 Internet Solutions</a>'

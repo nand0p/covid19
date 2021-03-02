@@ -8,5 +8,7 @@ COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE
 
 
 ### If you find this useful, please contribute:
-- BTC: 112JJvxsvRYn4QtpWJqZmLsTbPEG7aPsdB
-- ETH: 0x5b857cc1103c82384457BACdcd6E2a9FCD0b7e2A
+- BTC: 3Egg2GsyYievwEiiyUkLN2DaokZ27XUS9Y
+- ETH: 0x71a54911Ad33A8D43950E9999F27D8fCe956f7cf
+- XMR: 839uwCZuZp8ESNdZ5YtCujcQw7WEhcBvPMUaBRV5pqdoP8LxgyLtx27KYxEMMAWQog4suatDGAVerRRLMNB3QZNXTqrBbPL
+- DOGE: D6NEgAuTYcaeddCGQqFDMWTNRaGMcYreG5
