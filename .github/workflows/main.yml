@@ -33,7 +33,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: nand0p/covid19:latest
-          build_args:
+          build-args:
             DATE: $(date)
             REVISION: ${{ github.sha }}
 
