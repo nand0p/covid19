@@ -21,6 +21,9 @@ jobs:
           username: nand0p
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: dump env
+        run: env
+
       - name: docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
