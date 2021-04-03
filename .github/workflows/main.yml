@@ -34,8 +34,8 @@ jobs:
           push: true
           tags: nand0p/covid19:latest
           build-args:
-            DATE: $(date)
-            REVISION: ${{ github.sha }}
+            - DATE: $(date)
+            - REVISION: ${{ github.sha }}
 
       - name: echo digest
         run: echo ${{ steps.docker_build.outputs.digest }}
