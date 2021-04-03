@@ -33,9 +33,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: nand0p/covid19:latest
-          build-args:
-            - DATE: $(date)
-            - REVISION: ${{ github.sha }}
+          build-args: DATE=$(date),REVISION=${{ github.sha }}
 
       - name: echo digest
         run: echo ${{ steps.docker_build.outputs.digest }}
