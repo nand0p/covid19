@@ -7,6 +7,7 @@ ARG REVISION
 
 COPY . .
 RUN pip install -r requirements.txt --no-cache-dir
+RUN pip list
 
 WORKDIR /app
 RUN mkdir -pv reports
