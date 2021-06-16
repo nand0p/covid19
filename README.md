@@ -12,3 +12,4 @@ COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE
 - ETH: 0x71a54911Ad33A8D43950E9999F27D8fCe956f7cf
 - XMR: 839uwCZuZp8ESNdZ5YtCujcQw7WEhcBvPMUaBRV5pqdoP8LxgyLtx27KYxEMMAWQog4suatDGAVerRRLMNB3QZNXTqrBbPL
 - DOGE: D6NEgAuTYcaeddCGQqFDMWTNRaGMcYreG5
+
